@@ -1,7 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './home.css';
 
 const Home = () => {
+    // 1. Estados para los filtros del Catálogo
+    const [priceRange, setPriceRange] = useState(300);
+    const [sortOption, setSortOption] = useState('newest');
+    const [selectedCategory, setSelectedCategory] = useState('all');
+
+    // 2. Ref para el scroll horizontal de Recomendados
+    const recommendedScrollRef = useRef(null);
+
+    // 3. Efecto para la animación "Reveal on Scroll"
     useEffect(() => {
         const handleScroll = () => {
             const reveals = document.querySelectorAll('.reveal-on-scroll');
@@ -12,26 +21,38 @@ const Home = () => {
             });
         };
         window.addEventListener('scroll', handleScroll);
+        // Disparar una vez al inicio
         handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // 4. Función para mover el carrusel de Recomendados
+    const scrollRecommended = (direction) => {
+        if (recommendedScrollRef.current) {
+            const scrollAmount = 320; 
+            recommendedScrollRef.current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
 
     return (
         <div className="home-container">
             {/* 1. TOP ANNOUNCEMENT */}
             <div className="top-banner">
-                FREE GLOBAL SHIPPING ON ORDERS OVER $150 | PREMIUM CRAFTED QUALITY
+                ENVIO GRATIS SOBRE $199.000 EN TODO EL TERRITORIO NACIONAL
             </div>
 
             {/* 2. HERO SECTION */}
             <section className="hero">
                 <div className="hero-content reveal-on-scroll">
-                    <span className="hero-tag">THE HERITAGE COLLECTION</span>
-                    <h1 className="hero-title">MODERN<br/>FRONTIER</h1>
-                    <p className="hero-text">Defining the intersection of rugged craftsmanship and contemporary urban aesthetics.</p>
+                    <span className="hero-tag">ATREVETE CON </span>
+                    <h1 className="hero-title">BREINS<br/>STORE</h1>
+                    <p className="hero-text">Descubre tu estilo al mejor precio.</p>
                     <div className="hero-btns">
-                        <button className="btn-solid">SHOP COLLECTION</button>
-                        <button className="btn-outline">THE LOOKBOOK</button>
+                        <button className="btn-solid">Zapatos</button>
+                        <button className="btn-outline">Ropa</button>
                     </div>
                 </div>
             </section>
@@ -41,97 +62,198 @@ const Home = () => {
                 <div className="container">
                     <div className="section-header reveal-on-scroll">
                         <div>
-                            <h2 className="display-title">Recommended for you</h2>
-                            <p className="subtitle">Curated based on your style profile</p>
+                            <h2 className="display-title">Recomendado para ti</h2>
+                            <p className="subtitle">Selección de temporada</p>
                         </div>
                         <div className="nav-arrows">
-                            <button className="arrow-btn"><span className="material-symbols-outlined">west</span></button>
-                            <button className="arrow-btn"><span className="material-symbols-outlined">east</span></button>
+                            <button className="arrow-btn" onClick={() => scrollRecommended('left')}>
+                                <span className="material-symbols-outlined">west</span>
+                            </button>
+                            <button className="arrow-btn" onClick={() => scrollRecommended('right')}>
+                                <span className="material-symbols-outlined">east</span>
+                            </button>
                         </div>
                     </div>
                     
-                    <div className="horizontal-scroll no-scrollbar reveal-on-scroll">
-                        <ProductCard badge="Best Seller" name="Elite Suede Oxford" price="$185.00" img1="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600" img2="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=600" />
-                        <ProductCard badge="-20% SALE" name="Roughneck Field Boot" price="$240.00" isSale img1="https://images.unsplash.com/photo-1520639889410-d65c36fcc9ca?q=80&w=600" img2="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=600" />
-                        <ProductCard name="Veloce Sport Runner" price="$160.00" img1="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=600" img2="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?q=80&w=600" />
-                        <ProductCard badge="New" name="Aero Prime Low" price="$145.00" img1="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=600" img2="https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=600" />
+                    <div className="horizontal-scroll no-scrollbar reveal-on-scroll" ref={recommendedScrollRef}>
+                        <ProductCard badge="Best Seller" name="Elite Suede Oxford" price="$185.000" img1="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600" img2="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=600" />
+                        <ProductCard badge="-20% SALE" name="Roughneck Field Boot" price="$240.000" isSale img1="https://images.unsplash.com/photo-1520639889410-d65c36fcc9ca?q=80&w=600" img2="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=600" />
+                        <ProductCard name="Veloce Sport Runner" price="$160.000" img1="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=600" img2="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?q=80&w=600" />
+                        <ProductCard badge="New" name="Aero Prime Low" price="$145.000" img1="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=600" img2="https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=600" />
+                        <ProductCard name="Urban Trekker" price="$135.000" img1="https://images.unsplash.com/photo-1512374382149-233c42b6a83b?q=80&w=600" img2="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?q=80&w=600" />
                     </div>
                 </div>
             </section>
 
             {/* 4. CATEGORIES GRID */}
             <section className="category-full-grid">
-                <CategoryItem title="Boots" img="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=800" />
-                <CategoryItem title="Sneakers" img="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800" />
-                <CategoryItem title="Formal" img="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=800" />
+                <CategoryItem title="Zapatos" img="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?q=80&w=800" />
+                <CategoryItem title="Ropa" img="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800" />
+                <CategoryItem title="Ofertas" img="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=800" />
             </section>
 
             {/* 5. MID-SEASON SALE (PARALLAX) */}
             <section className="parallax-section">
                 <div className="parallax-content reveal-on-scroll">
-                    <span className="hero-tag">Mid-Season Sale</span>
-                    <h2 className="parallax-title">Up to 40% Off Selection</h2>
-                    <p className="parallax-text">Upgrade your footwear game with our curated selection of premium leather boots.</p>
-                    <button className="btn-solid">Shop the Sale</button>
+                    <span className="hero-tag">@BREINS_STORE</span>
+                    <h2 className="parallax-title">El Flow en Movimiento</h2>
+                    <p className="parallax-text">Únete al parche en Instagram. Así se llevan nuestros sneakers en la calle.</p>
+                    <button className="btn-solid">Seguir</button>
                 </div>
             </section>
 
-            {/* 6. QUICK CATALOG WITH FILTERS */}
-            <section className="section-padding bg-light">
+            {/* 6. INSTAGRAM REELS SECTION */}
+            <div className="reels-grid reveal-on-scroll container" style={{marginTop: '2rem', marginBottom: '2rem'}}>
+                <div className="reel-card">
+                    <video className="reel-video" autoPlay muted loop playsInline poster="https://images.unsplash.com/photo-1607522370275-f14bc3a5d288?q=80&w=600">
+                        <source src="https://videos.pexels.com/video-files/5309381/5309381-uhd_2160_3840_25fps.mp4" type="video/mp4" />
+                    </video>
+                    <div className="reel-overlay"><span className="material-symbols-outlined">play_arrow</span></div>
+                </div>
+                <div className="reel-card">
+                    <video className="reel-video" autoPlay muted loop playsInline poster="https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=600">
+                        <source src="https://videos.pexels.com/video-files/6605676/6605676-uhd_2160_4096_25fps.mp4" type="video/mp4" />
+                    </video>
+                    <div className="reel-overlay"><span className="material-symbols-outlined">play_arrow</span></div>
+                </div>
+                <div className="reel-card">
+                    <video className="reel-video" autoPlay muted loop playsInline poster="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=600">
+                        <source src="https://videos.pexels.com/video-files/4724036/4724036-uhd_2160_4096_25fps.mp4" type="video/mp4" />
+                    </video>
+                    <div className="reel-overlay"><span className="material-symbols-outlined">play_arrow</span></div>
+                </div>
+                <div className="reel-card">
+                    <video className="reel-video" autoPlay muted loop playsInline poster="https://images.unsplash.com/photo-1605218427368-35b019b88938?q=80&w=600">
+                        <source src="https://videos.pexels.com/video-files/3723349/3723349-uhd_2160_4096_25fps.mp4" type="video/mp4" />
+                    </video>
+                    <div className="reel-overlay"><span className="material-symbols-outlined">play_arrow</span></div>
+                </div>
+            </div>
+
+            {/* 7. QUICK CATALOG WITH FILTERS */}
+            <section className="section-padding bg-light" id="catalog">
                 <div className="container">
-                    <h2 className="display-title mb-16 reveal-on-scroll">Quick Catalog</h2>
+                    <div className="catalog-header reveal-on-scroll">
+                        <h2 className="display-title">Catálogo Rápido</h2>
+                    </div>
+
                     <div className="catalog-layout">
+                        {/* SIDEBAR DE FILTROS (AHORA CON ORDENAR) */}
                         <aside className="filters-sidebar reveal-on-scroll">
+                            
+                            {/* NUEVO: ORDENAR POR (Movido aquí) */}
                             <div className="filter-group">
-                                <h4>Color</h4>
-                                <div className="color-dots">
-                                    <button className="dot black"></button>
-                                    <button className="dot brown"></button>
-                                    <button className="dot gray"></button>
-                                    <button className="dot navy"></button>
+                                <h4>Ordenar por</h4>
+                                <div className="select-wrapper">
+                                    <select 
+                                        id="sort" 
+                                        className="sort-select-sidebar" 
+                                        value={sortOption} 
+                                        onChange={(e) => setSortOption(e.target.value)}
+                                    >
+                                        <option value="newest">Lo más nuevo</option>
+                                        <option value="price-asc">Precio: Menor a Mayor</option>
+                                        <option value="price-desc">Precio: Mayor a Menor</option>
+                                        <option value="bestseller">Más Vendidos</option>
+                                    </select>
                                 </div>
                             </div>
+
                             <div className="filter-group">
-                                <h4>Size</h4>
-                                <div className="size-grid">
-                                    {['7','8','9','10','11','12'].map(s => <button key={s} className={s === '9' ? 'active' : ''}>{s}</button>)}
+                                <h4>Categoría</h4>
+                                <div className="category-list">
+                                    <label className={`cat-option ${selectedCategory === 'all' ? 'active' : ''}`}>
+                                        <input type="radio" name="category" checked={selectedCategory === 'all'} onChange={() => setSelectedCategory('all')} />
+                                        Todo
+                                    </label>
+                                    <label className={`cat-option ${selectedCategory === 'shoes' ? 'active' : ''}`}>
+                                        <input type="radio" name="category" checked={selectedCategory === 'shoes'} onChange={() => setSelectedCategory('shoes')} />
+                                        Zapatos
+                                    </label>
+                                    <label className={`cat-option ${selectedCategory === 'clothing' ? 'active' : ''}`}>
+                                        <input type="radio" name="category" checked={selectedCategory === 'clothing'} onChange={() => setSelectedCategory('clothing')} />
+                                        Ropa
+                                    </label>
+                                    <label className={`cat-option sale-option ${selectedCategory === 'sale' ? 'active' : ''}`}>
+                                        <input type="radio" name="category" checked={selectedCategory === 'sale'} onChange={() => setSelectedCategory('sale')} />
+                                        Ofertas %
+                                    </label>
                                 </div>
                             </div>
+
+                            <div className="filter-group">
+                                <div className="flex-between">
+                                    <h4>Precio Máx.</h4>
+                                    <span className="price-label">${priceRange}.000</span>
+                                </div>
+                                <input 
+                                    type="range" 
+                                    min="50" 
+                                    max="500" 
+                                    value={priceRange} 
+                                    className="price-slider"
+                                    onChange={(e) => setPriceRange(e.target.value)}
+                                />
+                                <div className="price-range-labels">
+                                    <span>$50k</span>
+                                    <span>$500k+</span>
+                                </div>
+                            </div>
+
+                            <div className="filter-group">
+                                <h4>Marcas</h4>
+                                <div className="checkbox-list">
+                                    <label className="checkbox-item"><input type="checkbox" /> Breins Original</label>
+                                    <label className="checkbox-item"><input type="checkbox" /> Nike</label>
+                                    <label className="checkbox-item"><input type="checkbox" /> Adidas</label>
+                                    <label className="checkbox-item"><input type="checkbox" /> Puma</label>
+                                </div>
+                            </div>
+
                         </aside>
                         
+                        {/* GRID DE PRODUCTOS */}
                         <div className="products-grid reveal-on-scroll">
-                            <ProductCard name="Carbon Racer" price="$215.00" img1="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600" />
-                            <ProductCard name="Lexington Monk" price="$295.00" img1="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=600" />
-                            <ProductCard name="Summit Hiker" price="$320.00" img1="https://images.unsplash.com/photo-1520639889410-d65c36fcc9ca?q=80&w=600" />
+                            <ProductCard name="Carbon Racer" price="$215.000" img1="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600" />
+                            <ProductCard name="Lexington Monk" price="$295.000" img1="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=600" />
+                            <ProductCard name="Summit Hiker" price="$320.000" img1="https://images.unsplash.com/photo-1520639889410-d65c36fcc9ca?q=80&w=600" badge="Sale" isSale />
+                            <ProductCard name="Urban Drifter" price="$180.000" img1="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=600" />
+                            <ProductCard name="Classic Oxford" price="$250.000" img1="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=600" />
+                            <ProductCard name="Trail Master" price="$195.000" img1="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=600" />
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* 7. FOOTER INFO & SERVICES */}
+            {/* 8. FOOTER INFO & SERVICES */}
             <section className="services-bar">
                 <div className="container service-items">
-                    <div className="service"><span className="material-symbols-outlined">local_shipping</span><p>Express Global Shipping</p></div>
-                    <div className="service border-x"><span className="material-symbols-outlined">verified_user</span><p>Premium 2-Year Warranty</p></div>
-                    <div className="service"><span className="material-symbols-outlined">published_with_changes</span><p>Easy 30-Day Returns</p></div>
+                    <div className="service"><span className="material-symbols-outlined">local_shipping</span><p>Envíos a todo el país</p></div>
+                    <div className="service border-x"><span className="material-symbols-outlined">verified_user</span><p>Garantía de Calidad</p></div>
+                    <div className="service"><span className="material-symbols-outlined">published_with_changes</span><p>Devoluciones Fáciles</p></div>
                 </div>
             </section>
 
             <footer className="footer">
-                <p>© 2026 BREINS STORE. Crafted for the Modern Explorer.</p>
+                <div className="container footer-content">
+                    <p>© 2026 BREINS STORE. Crafted for the Modern Explorer.</p>
+                    <div className="developer-tag">
+                        Desarrollado por <span className="kaal-brand">KAAL</span>
+                    </div>
+                </div>
             </footer>
         </div>
     );
 };
 
-/* Mini Componentes para Limpieza */
+/* Componentes Auxiliares */
 const ProductCard = ({ badge, name, price, img1, img2, isSale }) => (
     <div className="product-card group">
         <div className="img-container">
             <img src={img1} alt={name} className="main-img" />
             {img2 && <img src={img2} alt={name} className="hover-img" />}
             {badge && <div className={`badge ${isSale ? 'sale' : ''}`}>{badge}</div>}
-            <button className="add-cart-btn">Add to Cart</button>
+            <button className="add-cart-btn">Agregar</button>
         </div>
         <h3 className="prod-name">{name}</h3>
         <p className="prod-price">{price}</p>
@@ -143,7 +265,7 @@ const CategoryItem = ({ title, img }) => (
         <img src={img} alt={title} />
         <div className="cat-overlay">
             <h3>{title}</h3>
-            <span className="explore-btn">EXPLORE CATEGORY</span>
+            <span className="explore-btn">EXPLORAR CATEGORÍA</span>
         </div>
     </div>
 );
