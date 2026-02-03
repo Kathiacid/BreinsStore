@@ -1,0 +1,89 @@
+/* --- Services Bar --- */
+.services-bar {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 2rem 0;
+}
+
+.service-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+}
+
+.service {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: #333;
+}
+
+.service span {
+    font-size: 2rem;
+    color: #111;
+}
+
+.service p {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.border-x {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+/* --- Footer --- */
+.footer {
+    background-color: #111;
+    color: #fff;
+    padding: 2rem 0;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.developer-tag {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.kaal-brand {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .service-items {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    .border-x {
+        border: none;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        padding: 1.5rem 0;
+        width: 100%;
+    }
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}

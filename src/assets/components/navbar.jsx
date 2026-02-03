@@ -1,57 +1,51 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom'; // Agregamos 'Link' aquí
+import { NavLink, Link } from 'react-router-dom'; 
 import './navbar.css'; 
 
-const Navbar = () => {
+const Navbar = ({ onCartClick, cartCount }) => {
     const [isOpen, setIsOpen] = useState(false);
+
+    // Función auxiliar para cerrar menú
+    const closeMenu = () => setIsOpen(false);
+
+    // ✅ Función unificada: Cierra menú + Scroll al top
+    const handleHomeClick = () => {
+        closeMenu(); 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     return (
         <nav className="navbar">
-            {/* 1. LOGO - Usamos Link porque el logo no necesita estado "activo" */}
+            {/* 1. LOGO (Ahora con scroll to top) */}
             <div className="nav-logo">
-                <Link to="/">
+                <Link to="/" onClick={handleHomeClick}>
                     <span className="logo-bold">BREINS</span>
                     <span className="logo-light">STORE</span>
                 </Link>
             </div>
 
-            {/* 2. LINKS CENTRALES - Usamos NavLink para detectar la página actual */}
+            {/* 2. LINKS CENTRALES */}
             <ul className={`nav-menu ${isOpen ? "open" : ""}`}>
                 <li>
-                    <NavLink 
-                        to="/" 
-                        className={({ isActive }) => isActive ? "active-link" : ""} 
-                        onClick={() => setIsOpen(false)}
-                    >
+                    {/* INICIO (Con scroll to top) */}
+                    <Link to="/" onClick={handleHomeClick}>
                         INICIO
-                    </NavLink>
+                    </Link>
                 </li>
                 <li>
-                    <NavLink 
-                        to="/zapatos" 
-                        className={({ isActive }) => isActive ? "active-link" : ""} 
-                        onClick={() => setIsOpen(false)}
-                    >
+                    <Link to="/?category=shoes" onClick={closeMenu}>
                         ZAPATOS
-                    </NavLink>
+                    </Link>
                 </li>
                 <li>
-                    <NavLink 
-                        to="/ropa" 
-                        className={({ isActive }) => isActive ? "active-link" : ""} 
-                        onClick={() => setIsOpen(false)}
-                    >
+                    <Link to="/?category=clothing" onClick={closeMenu}>
                         ROPA
-                    </NavLink>
+                    </Link>
                 </li>
                 <li>
-                    <NavLink 
-                        to="/ofertas" 
-                        className={({ isActive }) => `link-ofertas ${isActive ? "active-link" : ""}`} 
-                        onClick={() => setIsOpen(false)}
-                    >
+                    <Link to="/?category=sale" className="link-ofertas" onClick={closeMenu}>
                         OFERTAS
-                    </NavLink>
+                    </Link>
                 </li>
             </ul>
 
@@ -62,13 +56,19 @@ const Navbar = () => {
                     <span className="material-symbols-outlined icon">search</span>
                 </div>
                 
-                <Link to="/carrito" className="nav-icon-link">
+                <div 
+                    className="nav-icon-link" 
+                    onClick={onCartClick} 
+                    style={{ cursor: 'pointer' }}
+                >
                     <span className="material-symbols-outlined icon">shopping_cart</span>
-                    <span className="cart-count">0</span>
-                </Link>
+                    {cartCount > 0 && (
+                        <span className="cart-count">{cartCount}</span>
+                    )}
+                </div>
             </div>
 
-            {/* Menú hamburguesa (Descomentado para que funcione en móvil) */}
+            {/* Menú hamburguesa */}
             <div className={`nav-toggle ${isOpen ? "open" : ""}`} onClick={() => setIsOpen(!isOpen)}>
                 <span></span>
                 <span></span>

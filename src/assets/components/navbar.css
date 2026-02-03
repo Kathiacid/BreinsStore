@@ -1,3 +1,6 @@
+/* =========================================
+   1. NAVBAR CONTAINER (Glassmorphism)
+   ========================================= */
 .navbar {
     position: fixed; 
     top: 0;
@@ -11,26 +14,32 @@
     height: 80px;
     box-sizing: border-box; 
     
-    /* --- EFECTO GLASSMORPHISM --- */
-    background-color: rgba(255, 255, 255, 0.7); /* Blanco con 70% de opacidad */
-    backdrop-filter: blur(10px); /* Desenfoque del fondo */
-    -webkit-backdrop-filter: blur(10px); /* Soporte para Safari */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3); /* Borde sutil y translúcido */
-    
-    /* Opcional: una sombra muy suave para dar profundidad */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    /* Efecto Cristal */
+    background-color: rgba(255, 255, 255, 0.8); /* Un poco más opaco para legibilidad */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
 }
 
-/* --- LOGO --- */
+/* =========================================
+   2. LOGO
+   ========================================= */
 .nav-logo a {
     text-decoration: none;
-    color: #1a1a1a; /* Un tono un poco más profundo para contraste */
-    font-size: 1.4rem;
-    letter-spacing: 2px;
+    color: #1a1a1a;
+    font-family: var(--font-display); /* Usamos la Serif aquí */
+    font-size: 1.6rem; /* Un poco más grande */
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
 }
-.logo-bold { font-weight: 800; }
-.logo-light { font-weight: 300; }
+.logo-bold { font-weight: 900; } /* Muy grueso */
+.logo-light { font-weight: 400; font-style: italic; } /* Fino e i
 
+/* =========================================
+   3. MENU LINKS (Animación de línea)
+   ========================================= */
 /* --- LINKS CENTRALES --- */
 .nav-menu {
     display: flex;
@@ -40,7 +49,7 @@
 
 .nav-menu li a {
     text-decoration: none;
-    color: #333;
+    color: #444;
     font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 1px;
@@ -50,127 +59,182 @@
     transition: color 0.3s ease;
 }
 
+/* Línea animada base */
 .nav-menu li a::after {
-content: '';
+    content: '';
     position: absolute;
-    bottom: -4px;
-    left: 50%;         /* Posiciona el inicio en el medio exacto */
-    width: 0;          /* Empieza sin ancho */
+    /* CAMBIO 1: De -4px a 0px para pegarla al texto */
+    bottom: 0px; 
+    left: 50%;
+    width: 0;
     height: 2px;
-    background-color: #000;
-    transform: translateX(-50%); /* Lo centra respecto a sí mismo */
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: center;     /* Asegura que el crecimiento sea hacia ambos lados */
+    background-color: #1a1a1a;
+    transform: translateX(-50%);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Hover y Active States */
+.nav-menu li a:hover { color: #000; }
+.nav-menu li a.active-link { color: #000; font-weight: 700; }
 
 .nav-menu li a.active-link::after,
 .nav-menu li a:hover::after {
-    width: 100%; /* Se expande desde la izquierda al 100% */
-}
-
-.nav-menu li a:hover {
-    color: #000;
-}
-
-.nav-menu li a:hover::after {
-    width: 100%; /* Se expande al 100% al pasar el mouse */
-} 
-
-.nav-menu li a.active-link {
-    color: #000;
-    font-weight: 700;
-}
-
-/* La línea animada debajo del link activo */
-.nav-menu li a.active-link::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
     width: 100%;
-    height: 2px;
-    background-color: #000; /* Línea negra para links normales */
-    border-radius: 2px;
 }
 
-/* Ajuste específico para OFERTAS cuando está activo */
+/* --- ESTILOS ESPECIALES PARA OFERTAS --- */
+
+/* Color del texto */
+.nav-menu li a.link-ofertas { 
+    color: #e63946; 
+}
+
+/* CAMBIO 2: Definimos que la línea de ofertas sea SIEMPRE roja en su estado base.
+   Así, cuando quitas el mouse y la línea se retrae (width: 0), sigue siendo roja. */
+.nav-menu li a.link-ofertas::after {
+    background-color: #e63946;
+}
+
+/* Mantenemos el rojo en hover y active (aunque ya es redundante con la regla de arriba, asegura la especificidad) */
 .nav-menu li a.link-ofertas.active-link::after,
 .nav-menu li a.link-ofertas:hover::after {
-    background-color: #e63946; /* Línea roja para ofertas */
+    background-color: #e63946;
 }
-/* Estilo especial para OFERTAS */
-.nav-menu li a.link-ofertas {
-    color: #e63946;
-}
-
-
-/* --- BUSCADOR E ICONOS --- */
+/* =========================================
+   4. BUSCADOR E ICONOS (Estilo Cápsula Moderna)
+   ========================================= */
 .nav-actions {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
+/* El contenedor del buscador */
 .search-box {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #ccc;
-    padding: 2px 5px;
-    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    background-color: #f4f4f4; /* Gris suave */
+    border: 1px solid transparent;
+    border-radius: 50px; /* Redondeado total */
+    padding: 8px 16px;
+    width: 180px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* Efecto Focus: Se expande y se pone blanco */
 .search-box:focus-within {
-    border-color: #000;
-    box-shadow: 0 1px 0 #000; /* Hace que la línea se vea más marcada */
+    background-color: #fff;
+    border-color: #1a1a1a;
+    width: 240px; /* Expansión */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .search-input {
     border: none;
     outline: none;
+    background: transparent;
     font-size: 0.9rem;
-    width: 120px;
-}
-
-.icon {
-    font-size: 22px !important;
+    width: 100%;
     color: #333;
+    font-family: inherit;
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-weight: 400;
+}
+
+/* Icono Lupa */
+.search-box .icon {
+    font-size: 20px !important;
+    color: #777;
     cursor: pointer;
-    transition: transform 0.3s ease, color 0.3s ease;
+    transition: color 0.3s;
 }
 
-.icon:hover {
-    transform: scale(1.15) translateY(-2px); /* Crece y sube un poquito */
-    color: #000;
+.search-box:focus-within .icon {
+    color: #1a1a1a;
 }
 
+/* --- CARRITO --- */
 .nav-icon-link {
     text-decoration: none;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.nav-icon-link:hover .cart-count {
-    transform: scale(1.2);
-    background-color: #e63946; /* Cambia a rojo al pasar el mouse */
-    transition: all 0.3s ease;
+.nav-icon-link .icon {
+    font-size: 26px !important;
+    color: #1a1a1a;
+    transition: transform 0.3s ease;
+}
+
+.nav-icon-link:hover .icon {
+    transform: scale(1.1);
 }
 
 .cart-count {
     position: absolute;
-    top: -8px;
-    right: -10px;
-    background: #333;
+    top: -5px;
+    right: -8px;
+    background-color: #1a1a1a;
     color: #fff;
-    font-size: 10px;
-    padding: 2px 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 50%;
+    border: 2px solid #fff; /* Para separarlo visualmente del icono */
+    transition: background-color 0.3s;
 }
 
-/* --- RESPONSIVE --- */
+.nav-icon-link:hover .cart-count {
+    background-color: #e63946;
+}
+
+/* =========================================
+   5. RESPONSIVE / MOBILE
+   ========================================= */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.nav-toggle span {
+    width: 25px;
+    height: 3px;
+    background-color: #1a1a1a;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
 @media (max-width: 900px) {
-    .nav-menu {
-        display: none; /* Aquí implementarías tu lógica de menú abierto */
+    /* Ocultamos menú y buscador en móvil (por ahora) */
+    .nav-menu, .search-box {
+        display: none; 
     }
-    .search-box {
-        display: none;
+    
+    .nav-toggle {
+        display: flex; /* Mostramos hamburguesa */
+    }
+
+    /* Si quieres mostrar el menú al abrir (lógica JS required para clase .open) */
+    .nav-menu.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 }

@@ -1,14 +1,13 @@
-paginatio
-subrayado activo
-estilo barra de busqueda
-estilo barra y acordeon de filtro de orden
-componente carrito
-back oferta
-filtro de precio: precio maximo que sea igual al producto con mayor precio
-media query 
-pagina detalle de producto
-mensaje de whatsapp:
 
+
+
+
+
+
+*media query telefono
+
+=========
+mensaje de whatsapp:
 Nombre:
 Apellidos:
 Direccion de entrega:
@@ -18,3 +17,9 @@ Producto(s):
 -
 -
 Total a pagar:
+================
+*menu hamburguesa
+*ofertas: hacer que se le pueda poner el precio antes y despues y que tenga la categoria oferta
+*fav icon
+*titulo
+*pantallas de error o de que no hay productos
