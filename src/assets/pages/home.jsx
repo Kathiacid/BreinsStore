@@ -7,6 +7,9 @@ import { useProductos } from "../hook/useProductos";
 import shopService from "../services/shopService";
 import ProductModal from "../components/ProductModal"; // Asegúrate de tener este componente creado
 
+
+
+
 // 0. DEFINICIÓN DE COLORES
 const COMMON_COLORS = [
   { id: "negro", label: "Negro", hex: "#212121" },
@@ -280,7 +283,7 @@ const Home = ({ onAddProduct }) => {
                           originalPrice={formatPriceCOP(p.precio)} 
                           finalPrice={finalPriceStr}
                           img1={p.imagen_url || "https://via.placeholder.com/600x600?text=Producto"}
-                          img2={null}
+                          img2={p.imagenes?.[0]?.imagen_url || null}
                           isSale={!!p.tiene_oferta_vigente}
                           onAdd={() => onAddProduct(p.nombre, finalPriceStr, p.imagen_url)}
                           onOpenModal={() => handleOpenModal(p)}
