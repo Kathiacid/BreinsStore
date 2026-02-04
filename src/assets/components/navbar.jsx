@@ -1,22 +1,43 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; // ✅ Importamos useNavigate
 import './navbar.css'; 
 
 const Navbar = ({ onCartClick, cartCount }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState(""); // ✅ Estado para el texto
+    const navigate = useNavigate(); // ✅ Hook de navegación
 
-    // Función auxiliar para cerrar menú
     const closeMenu = () => setIsOpen(false);
 
-    // ✅ Función unificada: Cierra menú + Scroll al top
     const handleHomeClick = () => {
+        setSearchTerm(""); // Limpiar búsqueda al ir a inicio
         closeMenu(); 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    // ✅ Función para ejecutar la búsqueda
+    const handleSearch = () => {
+        if (searchTerm.trim()) {
+            // Navega a la home con el parámetro ?search=...
+            navigate(`/?search=${encodeURIComponent(searchTerm.trim())}`);
+            closeMenu();
+            // Scroll al catálogo para ver resultados
+            setTimeout(() => {
+                const catalog = document.getElementById('catalog');
+                if(catalog) catalog.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    };
+
+    // ✅ Detectar tecla Enter
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
     return (
         <nav className="navbar">
-            {/* 1. LOGO (Ahora con scroll to top) */}
             <div className="nav-logo">
                 <Link to="/" onClick={handleHomeClick}>
                     <span className="logo-bold">BREINS</span>
@@ -24,36 +45,31 @@ const Navbar = ({ onCartClick, cartCount }) => {
                 </Link>
             </div>
 
-            {/* 2. LINKS CENTRALES */}
             <ul className={`nav-menu ${isOpen ? "open" : ""}`}>
-                <li>
-                    {/* INICIO (Con scroll to top) */}
-                    <Link to="/" onClick={handleHomeClick}>
-                        INICIO
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/?category=shoes" onClick={closeMenu}>
-                        ZAPATOS
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/?category=clothing" onClick={closeMenu}>
-                        ROPA
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/?category=sale" className="link-ofertas" onClick={closeMenu}>
-                        OFERTAS
-                    </Link>
-                </li>
+                <li><Link to="/" onClick={handleHomeClick}>INICIO</Link></li>
+                <li><Link to="/?category=shoes" onClick={closeMenu}>ZAPATOS</Link></li>
+                <li><Link to="/?category=clothing" onClick={closeMenu}>ROPA</Link></li>
+                <li><Link to="/?category=sale" className="link-ofertas" onClick={closeMenu}>OFERTAS</Link></li>
             </ul>
 
-            {/* 3. ICONOS Y BUSCADOR */}
             <div className="nav-actions">
+                {/* ✅ BARRA DE BÚSQUEDA FUNCIONAL */}
                 <div className="search-box">
-                    <input type="text" placeholder="Buscar..." className="search-input" />
-                    <span className="material-symbols-outlined icon">search</span>
+                    <input 
+                        type="text" 
+                        placeholder="Buscar..." 
+                        className="search-input"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <span 
+                        className="material-symbols-outlined icon" 
+                        onClick={handleSearch}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        search
+                    </span>
                 </div>
                 
                 <div 
@@ -68,7 +84,6 @@ const Navbar = ({ onCartClick, cartCount }) => {
                 </div>
             </div>
 
-            {/* Menú hamburguesa */}
             <div className={`nav-toggle ${isOpen ? "open" : ""}`} onClick={() => setIsOpen(!isOpen)}>
                 <span></span>
                 <span></span>

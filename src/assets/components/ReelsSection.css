@@ -1,0 +1,150 @@
+/* src/assets/components/ReelsSection.css */
+.reels-section {
+    padding: 60px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.reels-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.reels-title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    margin-bottom: 10px;
+    color: #212121;
+}
+
+.reels-subtitle {
+    color: #666;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Contenedor Grid/Scroll */
+.reels-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 columnas en escritorio */
+    gap: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Tarjeta de Reel */
+.reel-card {
+    position: relative;
+    aspect-ratio: 9 / 16; /* Formato vertical exacto de Reels */
+    background-color: #f4f4f4;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    display: block;
+}
+
+.reel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.reel-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 0.3s;
+}
+
+.reel-card:hover .reel-thumb {
+    filter: brightness(0.8);
+}
+
+/* Icono de Play y Logo de Instagram */
+.reel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+    opacity: 0; /* Invisible hasta hover */
+    transition: opacity 0.3s;
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+}
+
+.reel-card:hover .reel-overlay {
+    opacity: 1;
+}
+
+.reel-icon {
+    align-self: flex-end;
+    color: white;
+    font-size: 1.2rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.play-icon {
+    align-self: center;
+    font-size: 3rem;
+    color: white;
+    margin-top: auto;
+    margin-bottom: auto;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.reel-caption {
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limita a 2 líneas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .reels-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 en tablet */
+    }
+    /* Ocultamos los últimos 2 en tablet para que no quede raro, o usamos scroll */
+    .reel-card:nth-child(n+4) {
+        display: none; 
+    }
+}
+
+@media (max-width: 768px) {
+    .reels-grid {
+        display: flex; /* Cambiamos a Flex para scroll horizontal */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 20px; /* Espacio para scrollbar */
+    }
+    
+    .reel-card {
+        flex: 0 0 160px; /* Ancho fijo en móvil */
+        scroll-snap-align: start;
+    }
+    
+    .reel-card:nth-child(n+4) {
+        display: block; /* Volvemos a mostrar todos en móvil */
+    }
+
+    /* Scrollbar invisible pero funcional */
+    .reels-grid::-webkit-scrollbar {
+        height: 4px;
+    }
+    .reels-grid::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 4px;
+    }
+}

@@ -56,7 +56,7 @@ body {
 .hero {
     height: 85vh;
     /* Imagen de fondo con overlay oscuro */
-    background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://mir-s3-cdn-cf.behance.net/project_modules/fs/bc4dff108846261.5fc6b756a8e51.jpg');
+    background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('../components/img/3.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed; /* Efecto Parallax suave */
@@ -97,7 +97,9 @@ body {
         3px 3px 0px #1a2a3a,
         4px 4px 8px rgba(0,0,0,0.6);
 }
-
+.hero-title span{
+    color:#C5B358 ;
+}
 .hero-text { 
     max-width: 500px; 
     font-size: 1.2rem; /* Un poco más grande para Poppins */
@@ -403,7 +405,7 @@ body {
     background-color: #212121;
     
     /* 2. Imagen con el filtro oscuro encima */
-    background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://mir-s3-cdn-cf.behance.net/project_modules/fs/bc4dff108846261.5fc6b756a8e51.jpg'); 
+    background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(../components/img/3.jpg); 
     
     /* 3. Propiedades de posición */
     background-attachment: fixed; 
@@ -891,4 +893,88 @@ body {
     .parallax-section, .hero {
         background-attachment: scroll;
     }
+}
+
+/* --- ESTILOS PARA ESTADO SIN RESULTADOS (Empty State) --- */
+.empty-state-container {
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  grid-column: 1 / -1; /* Para que ocupe todo el ancho del grid */
+  padding: 40px 20px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.empty-code-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.empty-code {
+  font-size: 8rem; /* Un poco más chico que el 404 para que quepa */
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -5px;
+  margin: 0;
+  color: #212121;
+  text-shadow: 3px 3px 0px #eee;
+}
+
+.empty-tag {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  background-color: #d32f2f;
+  color: white;
+  padding: 4px 15px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: #212121;
+}
+
+.empty-subtitle {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 30px;
+  max-width: 350px;
+  line-height: 1.5;
+}
+
+.btn-reset {
+  background-color: #212121;
+  color: white;
+  padding: 12px 30px;
+  text-decoration: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid #212121;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-reset:hover {
+  background-color: transparent;
+  color: #212121;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

@@ -25,7 +25,7 @@ const Footer = () => {
             {/* MAIN FOOTER */}
             <footer className="footer">
                 <div className="container footer-content">
-                    <p>© 2026 BREINS STORE. Crafted for the Modern Explorer.</p>
+                    <p>© 2026 BREINS STORE. </p>
                     <div className="developer-tag">
                         Desarrollado por <span className="kaal-brand">KAAL</span>
                     </div>

@@ -46,7 +46,9 @@
     list-style: none;
     gap: 30px;
 }
-
+.logo-light{
+    color: #C5B358;
+}
 .nav-menu li a {
     text-decoration: none;
     color: #444;
