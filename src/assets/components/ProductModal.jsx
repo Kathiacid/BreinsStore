@@ -1,20 +1,14 @@
-// src/assets/components/ProductModal.jsx
 import React from "react";
 import "./ProductModal.css";
 
 const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
   if (!isOpen || !product) return null;
 
-  // Lógica de precios idéntica a ProductCard
-  const isSale = product.tiene_oferta_vigente;
-  const originalPrice = Number(product.precio).toLocaleString("es-CO", {
-    style: "currency",
-    currency: "COP",
-    maximumFractionDigits: 0,
-  });
-  
-  const finalPriceNum = product.precio_final ?? product.precio;
-  const finalPriceStr = Number(finalPriceNum).toLocaleString("es-CO", {
+  const price = product.priceRange.minVariantPrice.amount;
+  const compareAtPrice = product.variants.nodes[0].compareAtPrice?.amount;
+  const isSale = compareAtPrice && Number(compareAtPrice) > Number(price);
+
+  const formatPrice = (val) => Number(val).toLocaleString("es-CO", {
     style: "currency",
     currency: "COP",
     maximumFractionDigits: 0,
@@ -22,47 +16,31 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      {/* stopPropagation evita que al hacer click dentro del modal se cierre */}
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        
-        {/* Botón cerrar */}
         <button className="close-btn" onClick={onClose}>
           <span className="material-symbols-outlined">close</span>
         </button>
 
-        {/* Imagen */}
         <div className="modal-image-container">
-          <img 
-            src={product.imagen_url || "https://via.placeholder.com/600x600?text=Producto"} 
-            alt={product.nombre} 
-            className="modal-img" 
-          />
+          <img src={product.featuredImage?.url} alt={product.title} className="modal-img" />
         </div>
 
-        {/* Información */}
         <div className="modal-info">
-          <p className="modal-brand">{product.marca || "GENERICO"}</p>
-          <h2 className="modal-title">{product.nombre}</h2>
+          <p className="modal-brand">{product.vendor || "BREINS STORE"}</p>
+          <h2 className="modal-title">{product.title}</h2>
 
           <div className="modal-price-box">
-            {isSale && (
-              <span className="modal-original-price">{originalPrice}</span>
-            )}
-            <span className={`modal-final-price ${isSale ? "sale" : ""}`}>
-              {finalPriceStr}
-            </span>
+            {isSale && <span className="modal-original-price">{formatPrice(compareAtPrice)}</span>}
+            <span className={`modal-final-price ${isSale ? "sale" : ""}`}>{formatPrice(price)}</span>
           </div>
 
-          <p className="modal-description">
-            {product.descripcion || 
-             "Descripción detallada del producto. Aquí puedes agregar información sobre materiales, cuidados, ajuste y cualquier otro detalle relevante para el cliente."}
-          </p>
+          <p className="modal-description">{product.description || "Sin descripción disponible."}</p>
 
           <button 
             className="modal-add-btn"
             onClick={() => {
-                onAddToCart(product.nombre, finalPriceStr, product.imagen_url);
-                onClose(); // Opcional: cerrar modal al agregar
+                onAddToCart(product.variants.nodes[0].id);
+                onClose();
             }}
           >
             Agregar al Carrito

@@ -1,0 +1,1 @@
+Para agregar un producto a la seccion "recomendado para ti" debes agregar la ETIQUETA Recomendado al producto desde shopify. (siempre escrito igual, con R mayuscula)
