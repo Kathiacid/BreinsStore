@@ -81,12 +81,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Eliminación de bordes de enfoque */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .close-btn:hover { 
     background-color: #f5f5f5;
     transform: rotate(90deg); 
     color: #000;
+}
+
+.close-btn:focus {
+    outline: none;
 }
 
 /* ==========================================
@@ -181,7 +188,7 @@
 }
 
 .item-qty-selector button {
-    width: 24px;  /* Tamaño reducido */
+    width: 24px;
     height: 24px;
     border-radius: 50%;
     border: none;
@@ -194,11 +201,18 @@
     font-size: 0.9rem;
     transition: all 0.2s ease;
     padding: 0;
+    /* Eliminación de bordes de enfoque */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .item-qty-selector button:hover {
     background-color: #e63946;
     transform: scale(1.1);
+}
+
+.item-qty-selector button:focus {
+    outline: none;
 }
 
 .item-qty-selector span {
@@ -242,10 +256,17 @@
     transition: color 0.2s;
     display: flex;
     align-items: center;
+    /* Eliminación de bordes de enfoque */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .remove-btn:hover {
     color: #e63946;
+}
+
+.remove-btn:focus {
+    outline: none;
 }
 
 /* ==========================================
@@ -291,12 +312,19 @@
     justify-content: center;
     gap: 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    /* Eliminación de bordes de enfoque */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .checkout-btn:hover {
     background-color: #000;
     transform: translateY(-2px);
     box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+}
+
+.checkout-btn:focus {
+    outline: none;
 }
 
 .shipping-note {
@@ -309,7 +337,7 @@
 
 /* ==========================================
    8. RESPONSIVE
-   ========================================== */
+   ========================================= */
 @media (max-width: 500px) {
     .cart-drawer {
         width: 100%;

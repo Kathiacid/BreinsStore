@@ -282,18 +282,63 @@ body {
 
 /* Botón pequeño para Ver Detalles (Icono) */
 .btn-view {
-    width: 45px;
-    height: 45px;
-    background: var(--white);
-    color: var(--primary);
-    border-radius: 4px;
+    width: 100%;
+    padding: 18px;
+    background: #1A2A3A; /* El azul profundo de Breins */
+    color: #fff;
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    
+    /* Transición suave para todos los estados */
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-view:hover {
-    background: var(--primary);
-    color: var(--white);
+    background: #2a3f54; /* Un tono ligeramente más claro para notar la interacción */
+    letter-spacing: 2.5px; /* Las letras se expanden un poco (efecto elegante) */
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1); /* Brillo interno sutil */
 }
 
+/* Icono dentro del botón */
+.btn-view .material-symbols-outlined {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.btn-view:hover .material-symbols-outlined {
+    transform: scale(1.2) rotate(-10deg); /* El icono crece y gira un poco */
+}
+
+/* Efecto de línea de brillo pasando (opcional, muy premium) */
+.btn-view::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn-view:hover::after {
+    left: 100%;
+}
 /* Botón ancho para Añadir al Carrito */
 .btn-add {
     flex: 1; /* Ocupa el resto del espacio */
@@ -1075,4 +1120,203 @@ body {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   NUEVA INTEGRACIÓN: OFERTAS & AGOTADOS
+   ========================================= */
+
+/* 1. Badge Vertical (Superior Derecha) */
+.discount-badge-vertical {
+    position: absolute;
+    top: 0;
+    right: 15px; /* Ajusta la posición lateral */
+    background: red;
+    color: white;
+    padding: 12px 6px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 12px;
+    writing-mode: vertical-rl; /* Hace que el texto fluya hacia abajo */
+    text-orientation: mixed;
+    z-index: 5;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    border-radius: 0 0 4px 4px; /* Forma de etiqueta colgante */
+}
+
+/* 2. Estado Agotado / Tarjeta Bloqueada */
+.product-card.out-of-stock {
+    filter: grayscale(1); /* Pone toda la tarjeta en gris */
+    opacity: 0.7; /* La desvanece un poco */
+    pointer-events: none; /* No permite clicks ni efectos hover */
+    cursor: not-allowed;
+}
+
+/* Ajuste visual para el contenedor de imagen cuando está bloqueado */
+.product-card.out-of-stock .img-container {
+    background: #e8e8e8;
+}
+
+/* Badge de texto "Agotado" central */
+.stock-badge { 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    background: rgba(0,0,0,0.7); 
+    color: white; 
+    padding: 8px 16px; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    z-index: 10;
+    border: 1px solid white;
+    letter-spacing: 1px;
+}
+
+/* Evita que la tarjeta salte en hover si está bloqueada */
+.product-card.out-of-stock:hover {
+    transform: none;
+}
+
+/* ==========================================================================
+   CATÁLOGO - TARJETAS Y COLORES
+   ========================================================================== */
+
+.product-colors-swatch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+  height: 20px;
+  /* Evita el parpadeo al seleccionar en móviles */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.color-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  /* Borde sutil para que colores como el blanco se vean claramente */
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  /* Soporta degradados (multicolor/rainbow) */
+  background-size: cover;
+}
+
+.color-circle:hover {
+  transform: scale(1.3);
+  border-color: #000;
+}
+
+/* Estado cuando el color está seleccionado en el Home */
+.color-circle.active {
+  transform: scale(1.3);
+  border: 2px solid #000;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+/* ==========================================================================
+   BOTÓN ÚNICO (VER PRODUCTO)
+   ========================================================================== */
+
+.card-buttons-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  /* Eliminamos el display flex dividido para que el botón sea único */
+  display: block; 
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+}
+
+.product-card:hover .card-buttons-container {
+  transform: translateY(0);
+}
+
+.btn-view {
+  width: 100%;
+  padding: 18px;
+  background: #1A2A3A; /* Negro sólido elegante */
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.3s ease;
+}
+
+.btn-view:hover {
+  background: #333;
+}
+
+/* ==========================================================================
+   MODAL - BOTÓN CERRAR (X) CIRCULAR
+   ========================================================================== */
+
+.close-btn-minimal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  /* Dimensiones fijas e idénticas para asegurar el círculo */
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  /* Tipografía fina para la X */
+  font-family: serif;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
+  /* Centrado absoluto */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  color: #000;
+  transition: all 0.3s ease;
+  padding: 0;
+  outline: none;
+}
+
+.close-btn-minimal:hover {
+  background: #1a2a3a;
+  color: #fff;
+  transform: rotate(90deg);
+  border-color: #000;
+}
+
+/* ==========================================================================
+   MODAL - TALLAS (CON CONTRASTE)
+   ========================================================================== */
+
+.size-item {
+  padding: 12px 18px;
+  min-width: 55px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc; /* Fondo gris tenue para que resalte sobre el blanco */
+  color: #1a202c;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.1s ease; /* Transición rápida para evitar parpadeo blanco */
+}
+
+.size-item.active {
+  background: #000000 !important;
+  color: #fff !important;
+  border-color: #000;
+  transform: translateY(-2px);
 }

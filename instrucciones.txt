@@ -1,1 +1,17 @@
-Para agregar un producto a la seccion "recomendado para ti" debes agregar la ETIQUETA Recomendado al producto desde shopify. (siempre escrito igual, con R mayuscula)
+-Para agregar un producto a la seccion "recomendado para ti" debes agregar la ETIQUETA Recomendado al producto desde shopify. (siempre escrito igual, con R mayuscula)
+
+-Al crear un producto agregar 2 imagenes y descripcion.
+
+-Al crear un producto, par añadir los colores y tallas debemos ir a variantes, ahí agregar:
+    1)color : en la barra de abajo agregamos los colores (SOLO LOS QUE YA VIENENE EN SHOPIFY O SE ROMPERÁ LA PAGINA)
+    2) Talla o talla de calzada: agregar tambien.
+
+-Para crear un descuento debe utilizar la aplicacion RUBIK instalada ya en shopify.
+    1) crete task
+    2)step 1:ponerle un nombre
+    3)step2: aooky to de variant base price
+    4) step3: collections (para agregar a toda una coleccion) o secifict products (para productos especificos)
+    5) step5: Discount manager (ingresa el porcentaje de descuento)
+    6)step6: one time schedule
+    7) guardar.
+    8) en la lista donde te aparec el task, busca schedule start task y apretar start task, luego esperar hasta que el status diga finished

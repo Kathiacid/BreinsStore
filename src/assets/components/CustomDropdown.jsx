@@ -6,68 +6,48 @@ export default function CustomDropdown({
   onChange,
   options = [],
   placeholder = "Seleccionar...",
-  className = "",
   disabled = false,
 }) {
-  // ✅ HOOKS SIEMPRE ARRIBA (nunca condicionales)
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
   const selected = useMemo(() => {
-    return options.find((o) => o.value === value) || null;
+    return options.find((o) => String(o.value) === String(value)) || null;
   }, [options, value]);
 
   useEffect(() => {
-    const onDocClick = (e) => {
-      if (!rootRef.current) return;
-      if (!rootRef.current.contains(e.target)) setOpen(false);
+    const close = (e) => {
+      if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false);
     };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  const handleSelect = (opt) => {
-    if (disabled) return;
-    onChange?.(opt.value);
-    setOpen(false);
-  };
-
   return (
-    <div
-      ref={rootRef}
-      className={`custom-dropdown ${className} ${disabled ? "is-disabled" : ""}`}
-    >
+    <div ref={rootRef} className={`custom-dropdown ${open ? "is-open" : ""}`}>
       <button
         type="button"
         className="custom-dropdown__trigger"
-        onClick={() => !disabled && setOpen((s) => !s)}
-        aria-expanded={open}
-        disabled={disabled}
+        onClick={() => !disabled && setOpen(!open)}
       >
-        <span className="custom-dropdown__label">
-          {selected ? selected.label : placeholder}
-        </span>
-        <span className="custom-dropdown__chev">▾</span>
+        <span>{selected ? selected.label : placeholder}</span>
+        <span>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
-        <div className="custom-dropdown__menu" role="listbox">
-          {options.length === 0 ? (
-            <div className="custom-dropdown__empty">Sin opciones</div>
-          ) : (
-            options.map((opt) => (
-              <button
-                type="button"
-                key={opt.value}
-                className={`custom-dropdown__item ${
-                  opt.value === value ? "is-active" : ""
-                }`}
-                onClick={() => handleSelect(opt)}
-              >
-                {opt.label}
-              </button>
-            ))
-          )}
+        <div className="custom-dropdown__menu">
+          {options.map((opt) => (
+            <div
+              key={opt.value}
+              className={`custom-dropdown__item ${String(opt.value) === String(value) ? "active" : ""}`}
+              onClick={() => {
+                onChange(opt.value);
+                setOpen(false);
+              }}
+            >
+              {opt.label}
+            </div>
+          ))}
         </div>
       )}
     </div>
