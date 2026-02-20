@@ -247,6 +247,68 @@ body {
    ========================================= */
 
 /* --- Product Card --- */
+
+/* --- Nuevo contenedor de botones en la Card --- */
+.card-buttons-container {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 8px; /* Espacio entre botones */
+    transform: translateY(150%); /* Ocultos por defecto */
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 3;
+}
+
+.product-card:hover .card-buttons-container {
+    transform: translateY(0);
+}
+
+.card-btn {
+    border: none;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Botón pequeño para Ver Detalles (Icono) */
+.btn-view {
+    width: 45px;
+    height: 45px;
+    background: var(--white);
+    color: var(--primary);
+    border-radius: 4px;
+}
+
+.btn-view:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+/* Botón ancho para Añadir al Carrito */
+.btn-add {
+    flex: 1; /* Ocupa el resto del espacio */
+    height: 45px;
+    background: var(--primary); /* Azul de Breins */
+    color: var(--white);
+    border-radius: 4px;
+}
+
+.btn-add:hover {
+    background: #2a3f54; /* Un azul un poco más claro para el hover */
+    transform: translateY(-2px);
+}
+
+/* Asegúrate de borrar la regla vieja de .add-cart-btn para que no choque */
 .product-card { 
     min-width: 300px; 
     cursor: pointer; 

@@ -4,8 +4,12 @@ import "./ProductModal.css";
 const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
   if (!isOpen || !product) return null;
 
+  // Extraemos la información de disponibilidad
+  const estaDisponible = product.availableForSale;
+  
+  // Extraemos precios
   const price = product.priceRange.minVariantPrice.amount;
-  const compareAtPrice = product.variants.nodes[0].compareAtPrice?.amount;
+  const compareAtPrice = product.variants.nodes[0]?.compareAtPrice?.amount;
   const isSale = compareAtPrice && Number(compareAtPrice) > Number(price);
 
   const formatPrice = (val) => Number(val).toLocaleString("es-CO", {
@@ -22,7 +26,12 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
         </button>
 
         <div className="modal-image-container">
-          <img src={product.featuredImage?.url} alt={product.title} className="modal-img" />
+          {/* Si no hay stock, podemos aplicar un filtro visual opcional aquí */}
+          <img 
+            src={product.featuredImage?.url || product.imagen_url} 
+            alt={product.title} 
+            className={`modal-img ${!estaDisponible ? 'grayscale' : ''}`} 
+          />
         </div>
 
         <div className="modal-info">
@@ -36,15 +45,26 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
 
           <p className="modal-description">{product.description || "Sin descripción disponible."}</p>
 
+          {/* Botón con validación de stock integrada */}
           <button 
-            className="modal-add-btn"
+            className={`modal-add-btn ${!estaDisponible ? 'disabled' : ''}`}
+            disabled={!estaDisponible}
             onClick={() => {
-                onAddToCart(product.variants.nodes[0].id);
-                onClose();
+                if(estaDisponible) {
+                  // Usamos el ID de la variante para Shopify
+                  onAddToCart(product.variants.nodes[0].id);
+                  onClose();
+                }
             }}
           >
-            Agregar al Carrito
+            {estaDisponible ? 'Agregar al Carrito' : 'Producto Agotado'}
           </button>
+          
+          {!estaDisponible && (
+            <p style={{ color: '#e63946', fontSize: '0.8rem', marginTop: '10px', fontWeight: '600' }}>
+              Este producto no se encuentra disponible por el momento.
+            </p>
+          )}
         </div>
       </div>
     </div>

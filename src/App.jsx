@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import ScrollToTop from "./assets/components/ScrollToTop";
@@ -11,6 +11,14 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const toggleCart = () => setIsCartOpen((prev) => !prev);
+  const closeCart = () => setIsCartOpen(false);
+
+  // ✅ Escuchar evento global para abrir el carrito automáticamente
+  useEffect(() => {
+    const handleAutoOpen = () => setIsCartOpen(true);
+    window.addEventListener("openCart", handleAutoOpen);
+    return () => window.removeEventListener("openCart", handleAutoOpen);
+  }, []);
 
   return (
     <Router>
@@ -20,7 +28,7 @@ function App() {
 
       <Cart
         isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
+        onClose={closeCart}
       />
 
       <main>

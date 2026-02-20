@@ -45,7 +45,6 @@ const Home = () => {
   const [productos, setProductos] = useState([]);
   const [recommended, setRecommended] = useState([]);
 
-  // ✅ Función de scroll suave al catálogo
   const scrollToCatalog = () => {
     if (catalogRef.current) {
       catalogRef.current.scrollIntoView({ behavior: "smooth" });
@@ -55,50 +54,39 @@ const Home = () => {
   const fetchShopifyData = useCallback(async (isRecommended = false, category = "all") => {
     let gqlQuery = "";
     let variables = {};
-    let sortKey = "CREATED_AT";
-    let reverse = true;
+    
+    // Configuración de ordenamiento
+    let sortKey = (sortOption === "price-asc" || sortOption === "price-desc") ? "PRICE" : "CREATED_AT";
+    let reverse = sortOption !== "price-asc";
 
-    if (sortOption === "price-asc") {
-      sortKey = "PRICE";
-      reverse = false;
-    } else if (sortOption === "price-desc") {
-      sortKey = "PRICE";
-      reverse = true;
-    }
+    const productFields = `
+      id title vendor handle description availableForSale
+      featuredImage { url }
+      images(first: 2) { edges { node { url } } }
+      priceRange { minVariantPrice { amount } }
+      variants(first: 1) { 
+        nodes { id compareAtPrice { amount } availableForSale quantityAvailable }
+      }
+    `;
 
     if (isRecommended) {
-      gqlQuery = `query getRecommended($query: String) {
-        products(first: 10, query: $query) {
-          edges { node { id title vendor handle images(first: 2) { edges { node { url } } } priceRange { minVariantPrice { amount } } variants(first: 1) { edges { node { id compareAtPrice { amount } } } } } }
-        }
-      }`;
-      variables = { query: "tag:Recomendado" };
+      gqlQuery = `query { products(first: 10, query: "tag:Recomendado") { edges { node { ${productFields} } } } }`;
     } 
     else if (category !== "all" && !searchQuery) {
-      gqlQuery = `query getCollection($handle: String!, $sortKey: ProductCollectionSortKeys, $reverse: Boolean) {
+      gqlQuery = `query getCollection($handle: String!) {
         collection(handle: $handle) {
-          products(first: 20, sortKey: $sortKey, reverse: $reverse) {
-            edges { node { id title vendor handle images(first: 2) { edges { node { url } } } priceRange { minVariantPrice { amount } } variants(first: 1) { edges { node { id compareAtPrice { amount } } } } } }
-          }
+          products(first: 20) { edges { node { ${productFields} } } }
         }
       }`;
-      variables = { 
-        handle: CATEGORY_HANDLE_MAP[category],
-        sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
-        reverse 
-      };
+      variables = { handle: CATEGORY_HANDLE_MAP[category] };
     } 
     else {
       gqlQuery = `query getProducts($query: String, $sortKey: ProductSortKeys, $reverse: Boolean) {
         products(first: 20, query: $query, sortKey: $sortKey, reverse: $reverse) {
-          edges { node { id title vendor handle images(first: 2) { edges { node { url } } } priceRange { minVariantPrice { amount } } variants(first: 1) { edges { node { id compareAtPrice { amount } } } } } }
+          edges { node { ${productFields} } }
         }
       }`;
-      variables = { 
-        query: searchQuery || "",
-        sortKey,
-        reverse 
-      };
+      variables = { query: searchQuery || "", sortKey, reverse };
     }
 
     try {
@@ -108,31 +96,29 @@ const Home = () => {
         : data?.products?.edges;
 
       return (edges || []).map(({ node }) => ({
+        ...node, 
         id: node.id,
         nombre: node.title,
         marca: node.vendor,
+        disponible: node.availableForSale, // Validación de stock
         imagen_url: node.images.edges[0]?.node.url,
         imagen_hover: node.images.edges[1]?.node.url,
         precio: node.priceRange.minVariantPrice.amount,
-        precio_original: node.variants.edges[0]?.node.compareAtPrice?.amount,
-        variantId: node.variants.edges[0]?.node.id,
+        precio_original: node.variants.nodes[0]?.compareAtPrice?.amount,
+        variantId: node.variants.nodes[0]?.id,
       }));
     } catch (err) {
       return [];
     }
   }, [searchQuery, sortOption]);
 
-  // ✅ Sincronización URL + Scroll al Catálogo
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const s = params.get("search") || "";
     const c = params.get("category") || "all";
-
     setSearchQuery(s);
     setSelectedCategory(c);
-
-    // ✅ Bajamos al catálogo si hay filtros O si la URL tiene el parámetro explicitó de 'all'
-    if (location.search || c === "all" && location.hash === "#catalog") {
+    if (location.search || (c === "all" && location.hash === "#catalog")) {
       setTimeout(scrollToCatalog, 100);
     }
   }, [location.search]);
@@ -171,7 +157,9 @@ const Home = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         product={selectedProduct}
-        onAddToCart={(vId) => addToCart(vId, 1)}
+        onAddToCart={async (vId) => {
+            await addToCart(vId, 1);
+        }}
       />
 
       <div className="top-banner">ENVIO GRATIS SOBRE $199.000 EN COLOMBIA</div>
@@ -232,7 +220,6 @@ const Home = () => {
 
       <ReelsSection />
 
-      {/* ✅ SECCIÓN CATÁLOGO */}
       <section className="section-padding bg-light" id="catalog" ref={catalogRef}>
         <div className="container">
           <h2 className="display-title reveal-on-scroll">
@@ -263,7 +250,6 @@ const Home = () => {
                         type="radio" 
                         name="cat-filter"
                         checked={selectedCategory === cat} 
-                        // ✅ Al elegir 'all', añadimos el hash #catalog para disparar el scroll
                         onChange={() => navigate(cat === 'all' ? '/?category=all#catalog' : `/?category=${cat}`)} 
                       />
                       {cat === 'all' ? 'Todo' : cat === 'shoes' ? 'Zapatos' : cat === 'clothing' ? 'Ropa' : 'Ofertas %'}
@@ -289,23 +275,56 @@ const Home = () => {
   );
 };
 
-const ProductCard = ({ product, onOpen }) => (
-  <div className="product-card group" onClick={onOpen}>
-    <div className="img-container">
-      <img src={product.imagen_url} alt={product.nombre} className="main-img" />
-      {product.imagen_hover && <img src={product.imagen_hover} alt={product.nombre} className="hover-img" />}
-      <button className="add-cart-btn">Ver Detalles</button>
-    </div>
-    <div className="product-info-box" style={{textAlign: 'center', padding: '10px'}}>
-      <p className="prod-brand">{product.marca || "BREINS"}</p>
-      <h3 className="prod-name">{product.nombre}</h3>
-      <div className="prod-price-container">
-        {product.precio_original && <span className="original-price" style={{textDecoration: 'line-through', opacity: 0.5}}>{formatPriceCOP(product.precio_original)}</span>}
-        <span className="final-price" style={{fontWeight: 'bold'}}>{formatPriceCOP(product.precio)}</span>
+const ProductCard = ({ product, onOpen }) => {
+  // Verificamos si hay existencias
+  const estaDisponible = product.disponible && product.variants?.nodes[0]?.availableForSale;
+
+  return (
+    <div className={`product-card group ${!estaDisponible ? 'out-of-stock' : ''}`}>
+      <div className="img-container">
+        <div onClick={onOpen} style={{ cursor: 'pointer', height: '100%' }}>
+          <img src={product.imagen_url} alt={product.nombre} className="main-img" />
+          {product.imagen_hover && <img src={product.imagen_hover} alt={product.nombre} className="hover-img" />}
+          
+          {!estaDisponible && (
+            <div className="stock-badge">Agotado</div>
+          )}
+        </div>
+        
+        <div className="card-buttons-container">
+          <button className="card-btn btn-view" onClick={onOpen} title="Ver detalles">
+            <span className="material-symbols-outlined">visibility</span>
+          </button>
+          <button 
+            className={`card-btn btn-add ${!estaDisponible ? 'disabled' : ''}`} 
+            disabled={!estaDisponible}
+            onClick={async (e) => {
+              e.stopPropagation(); 
+              if (estaDisponible) {
+                await addToCart(product.variantId, 1);
+              }
+            }}
+          >
+            {estaDisponible ? 'Añadir al carrito' : 'Agotado'}
+          </button>
+        </div>
+      </div>
+      
+      <div className="product-info-box" style={{textAlign: 'center', padding: '10px'}}>
+        <p className="prod-brand">{product.marca || "BREINS"}</p>
+        <h3 className="prod-name">{product.nombre}</h3>
+        <div className="prod-price-container">
+          {product.precio_original && (
+            <span className="original-price" style={{textDecoration: 'line-through', opacity: 0.5, marginRight: '8px'}}>
+              {formatPriceCOP(product.precio_original)}
+            </span>
+          )}
+          <span className="final-price" style={{fontWeight: 'bold'}}>{formatPriceCOP(product.precio)}</span>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const CategoryItem = ({ title, img, link }) => (
   <Link to={link} className="cat-item reveal-on-scroll">

@@ -1,165 +1,180 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { getCart, removeFromCart, updateCartQuantity } from "../../utils/shopify";
+import "./cart.css";
 
 const Cart = ({ isOpen, onClose }) => {
-const [cartItems, setCartItems] = useState(() => {
-  return JSON.parse(localStorage.getItem("cart")) || [];
-});
+  const [cartData, setCartData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Cargar carrito desde localStorage
-  
+  const fetchCartItems = useCallback(async () => {
+    const cartId = localStorage.getItem("shopify_cart_id");
+    if (!cartId) {
+      setCartData(null); // Limpiar datos si no hay ID
+      return;
+    }
 
-  // Guardar cambios en localStorage
+    setLoading(true);
+    try {
+      const data = await getCart();
+      setCartData(data);
+    } catch (error) {
+      console.error("Error al obtener el carrito:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-    window.dispatchEvent(new Event("cartUpdated"));
-  }, [cartItems]);
+    if (isOpen) {
+      fetchCartItems();
+    }
+  }, [isOpen, fetchCartItems]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    window.addEventListener("cartUpdated", fetchCartItems);
+    return () => window.removeEventListener("cartUpdated", fetchCartItems);
+  }, [fetchCartItems]);
 
-  const updateQuantity = (id, amount) => {
-    const updatedCart = cartItems.map((item) =>
-      item.id === id
-        ? { ...item, quantity: Math.max(1, item.quantity + amount) }
-        : item
-    );
-
-    setCartItems(updatedCart);
+  // --- NUEVA FUNCIÓN INTEGRADA ---
+  const handleCheckout = () => {
+    if (cartData?.checkoutUrl) {
+      // Limpiamos el ID antes de salir para que al volver 
+      // la tienda esté lista para un carrito nuevo.
+      localStorage.removeItem("shopify_cart_id");
+      window.location.href = cartData.checkoutUrl;
+    }
   };
 
-  const removeItem = (id) => {
-    const updatedCart = cartItems.filter((item) => item.id !== id);
-    setCartItems(updatedCart);
+  const handleRemove = async (lineId) => {
+    setLoading(true);
+    try {
+      await removeFromCart(lineId);
+    } catch (err) {
+      console.error("Error al eliminar:", err);
+      setLoading(false);
+    }
   };
 
-  const total = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  const handleQtyChange = async (lineId, currentQty, delta) => {
+    const newQty = currentQty + delta;
+    if (newQty <= 0) {
+      handleRemove(lineId);
+      return;
+    }
+    setLoading(true);
+    try {
+      await updateCartQuantity(lineId, newQty);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
+  const lines = cartData?.lines?.edges || [];
+  const totalAmount = cartData?.cost?.totalAmount?.amount || 0;
+  const totalQuantity = cartData?.totalQuantity || 0;
+
+  const totalSavings = lines.reduce((acc, { node }) => {
+    const price = Number(node.merchandise.price.amount);
+    const compareAt = Number(node.merchandise.compareAtPrice?.amount || price);
+    return acc + (compareAt - price) * node.quantity;
+  }, 0);
+
+  const formatPrice = (val) => Number(val).toLocaleString("es-CO", {
+    style: "currency", currency: "COP", maximumFractionDigits: 0
+  });
 
   return (
-    <div style={overlayStyle}>
-      <div style={cartStyle}>
-        <button onClick={onClose} style={closeBtn}>
-          ✕
-        </button>
+    <>
+      <div className={`cart-overlay ${isOpen ? "open" : ""}`} onClick={onClose} />
+      <div className={`cart-drawer ${isOpen ? "open" : ""}`}>
+        
+        <div className="cart-header">
+          <h3>Tu Bolsa <span>({totalQuantity})</span></h3>
+          <button className="close-btn" onClick={onClose}>
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
 
-        <h2>Tu carrito 🛒</h2>
+        <div className="cart-content">
+          {loading && lines.length === 0 ? (
+            <div className="empty-msg"><p>Sincronizando con la tienda...</p></div>
+          ) : lines.length === 0 ? (
+            <div className="empty-msg">
+              <span className="material-symbols-outlined" style={{fontSize: '48px'}}>shopping_bag</span>
+              <p>Tu bolsa está vacía</p>
+            </div>
+          ) : (
+            <div className={`cart-items-section ${loading ? 'cart-loading-active' : ''}`}>
+              {lines.map(({ node }) => {
+                const price = Number(node.merchandise.price.amount);
+                const compareAt = Number(node.merchandise.compareAtPrice?.amount || 0);
+                const hasSale = compareAt > price;
 
-        {cartItems.length === 0 ? (
-          <p>Tu carrito está vacío</p>
-        ) : (
-          <>
-            {cartItems.map((item) => (
-              <div key={item.id} style={itemStyle}>
-                <img src={item.image} alt={item.title} width={60} />
+                return (
+                  <div key={node.id} className="cart-item">
+                    <div className="cart-item-img">
+                      <img src={node.merchandise.image?.url} alt="" />
+                    </div>
+                    
+                    <div className="cart-item-info">
+                      <div className="cart-item-row" style={{display:'flex', justifyContent:'space-between'}}>
+                        <h4>{node.merchandise.product.title}</h4>
+                        <button className="remove-btn" onClick={() => handleRemove(node.id)}>
+                            <span className="material-symbols-outlined" style={{fontSize: '20px'}}>delete</span>
+                        </button>
+                      </div>
+                      
+                      <p className="item-variant">{node.merchandise.title}</p>
 
-                <div style={{ flex: 1 }}>
-                  <p>{item.title}</p>
-                  <p>${item.price}</p>
+                      <div className="cart-item-price-row" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'10px'}}>
+                        <div className="item-qty-selector">
+                          <button onClick={() => handleQtyChange(node.id, node.quantity, -1)}>−</button>
+                          <span>{node.quantity}</span>
+                          <button onClick={() => handleQtyChange(node.id, node.quantity, 1)}>+</button>
+                        </div>
 
-                  <div style={qtyContainer}>
-                    <button
-                      onClick={() => updateQuantity(item.id, -1)}
-                    >
-                      −
-                    </button>
-
-                    <span>{item.quantity}</span>
-
-                    <button
-                      onClick={() => updateQuantity(item.id, 1)}
-                    >
-                      +
-                    </button>
+                        <div className="item-prices" style={{textAlign: 'right'}}>
+                          {hasSale && <span className="old-price" style={{fontSize:'0.8rem', textDecoration:'line-through', opacity: 0.5}}>{formatPrice(compareAt * node.quantity)}</span>}
+                          <p className={`item-price ${hasSale ? "sale-red" : ""}`} style={{margin:0, fontWeight:'bold'}}>
+                            {formatPrice(price * node.quantity)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    style={removeBtn}
-                  >
-                    Eliminar
-                  </button>
-                </div>
+        {lines.length > 0 && (
+          <div className="cart-footer">
+            {totalSavings > 0 && (
+              <div className="total-row savings-row" style={{ color: '#2e7d32', fontSize: '0.95rem', marginBottom: '8px', display:'flex', justifyContent:'space-between' }}>
+                <span>Ahorro total:</span>
+                <span className="savings-price">-{formatPrice(totalSavings)}</span>
               </div>
-            ))}
-
-            <hr />
-
-            <h3>Total: ${total.toFixed(2)}</h3>
-
-            <button style={checkoutBtn}>
-              Finalizar compra
+            )}
+            <div className="total-row" style={{display:'flex', justifyContent:'space-between', fontWeight:'bold', fontSize:'1.2rem', borderTop:'1px solid #eee', paddingTop:'15px'}}>
+              <span>TOTAL ESTIMADO:</span>
+              <span>{formatPrice(totalAmount)}</span>
+            </div>
+            
+            <button 
+              className="checkout-btn" 
+              onClick={handleCheckout} // ✅ Usando la nueva función
+              style={{width:'100%', padding:'15px', background:'#1a1a1a', color:'#fff', border:'none', marginTop:'20px', cursor:'pointer', fontWeight:'bold', display:'flex', alignItems:'center', justifyContent:'center', gap:'10px'}}
+            >
+              FINALIZAR PEDIDO
+              <span className="material-symbols-outlined">arrow_forward</span>
             </button>
-          </>
+          </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 
 export default Cart;
-
-/* ========================= */
-/* ESTILOS */
-/* ========================= */
-
-const overlayStyle = {
-  position: "fixed",
-  top: 0,
-  right: 0,
-  width: "100%",
-  height: "100%",
-  backgroundColor: "rgba(0,0,0,0.5)",
-  display: "flex",
-  justifyContent: "flex-end",
-  zIndex: 1000,
-};
-
-const cartStyle = {
-  width: "400px",
-  background: "white",
-  height: "100%",
-  padding: "20px",
-  overflowY: "auto",
-};
-
-const closeBtn = {
-  border: "none",
-  background: "transparent",
-  fontSize: "20px",
-  cursor: "pointer",
-  float: "right",
-};
-
-const itemStyle = {
-  display: "flex",
-  gap: "15px",
-  marginBottom: "15px",
-  alignItems: "center",
-};
-
-const qtyContainer = {
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
-  marginTop: "5px",
-};
-
-const removeBtn = {
-  marginTop: "5px",
-  background: "none",
-  border: "none",
-  color: "red",
-  cursor: "pointer",
-};
-
-const checkoutBtn = {
-  display: "block",
-  marginTop: "20px",
-  padding: "10px",
-  textAlign: "center",
-  backgroundColor: "black",
-  color: "white",
-  border: "none",
-  cursor: "pointer",
-};

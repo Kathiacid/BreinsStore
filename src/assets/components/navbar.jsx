@@ -1,53 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getCart } from "../../utils/shopify"; // ✅ Importamos getCart
 import "./navbar.css";
 
 const Navbar = ({ onCartClick }) => {
-
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
-  // ✅ Inicialización correcta sin error
-  const [cartCount, setCartCount] = useState(() => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    return cart.reduce((acc, item) => acc + item.quantity, 0);
-  });
+  const [cartCount, setCartCount] = useState(0); // ✅ Inicializamos en 0
 
   const navigate = useNavigate();
   const closeMenu = () => setIsOpen(false);
 
   /* =========================
-      ESCUCHAR CAMBIOS CARRITO
+      ACTUALIZAR CONTADOR REAL
   ========================= */
+  const updateBadgeCount = async () => {
+    try {
+      const cart = await getCart();
+      if (cart) {
+        setCartCount(cart.totalQuantity || 0);
+      }
+    } catch (error) {
+      console.error("Error al actualizar contador del navbar:", error);
+    }
+  };
 
   useEffect(() => {
+    // 1. Cargar cantidad inicial al montar
+    updateBadgeCount();
 
-    const handleCartChange = () => {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const total = cart.reduce(
-        (acc, item) => acc + item.quantity,
-        0
-      );
-      setCartCount(total);
-    };
-
-    // Entre pestañas
-    window.addEventListener("storage", handleCartChange);
-
-    // Misma pestaña (evento personalizado)
-    window.addEventListener("cartUpdated", handleCartChange);
+    // 2. Escuchar el evento personalizado que disparamos en shopify.js
+    window.addEventListener("cartUpdated", updateBadgeCount);
 
     return () => {
-      window.removeEventListener("storage", handleCartChange);
-      window.removeEventListener("cartUpdated", handleCartChange);
+      window.removeEventListener("cartUpdated", updateBadgeCount);
     };
-
   }, []);
 
   /* =========================
       BUSCADOR
   ========================= */
-
   const handleSearch = () => {
     if (searchTerm.trim()) {
       navigate(`/?search=${encodeURIComponent(searchTerm.trim())}`);
@@ -93,9 +85,7 @@ const Navbar = ({ onCartClick }) => {
             className="search-input"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter" && handleSearch()
-            }
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
           <span
             className="material-symbols-outlined icon"
@@ -106,10 +96,11 @@ const Navbar = ({ onCartClick }) => {
           </span>
         </div>
 
+        {/* ✅ Icono del Carrito con el Badge Corregido */}
         <div
           className="nav-icon-link"
           onClick={onCartClick}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", position: "relative" }}
         >
           <span className="material-symbols-outlined icon">
             shopping_cart
