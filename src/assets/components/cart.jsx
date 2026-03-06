@@ -9,7 +9,7 @@ const Cart = ({ isOpen, onClose }) => {
   const fetchCartItems = useCallback(async () => {
     const cartId = localStorage.getItem("shopify_cart_id");
     if (!cartId) {
-      setCartData(null); // Limpiar datos si no hay ID
+      setCartData(null); 
       return;
     }
 
@@ -35,11 +35,9 @@ const Cart = ({ isOpen, onClose }) => {
     return () => window.removeEventListener("cartUpdated", fetchCartItems);
   }, [fetchCartItems]);
 
-  // --- NUEVA FUNCIÓN INTEGRADA ---
+
   const handleCheckout = () => {
     if (cartData?.checkoutUrl) {
-      // Limpiamos el ID antes de salir para que al volver 
-      // la tienda esté lista para un carrito nuevo.
       localStorage.removeItem("shopify_cart_id");
       window.location.href = cartData.checkoutUrl;
     }
@@ -164,7 +162,7 @@ const Cart = ({ isOpen, onClose }) => {
             
             <button 
               className="checkout-btn" 
-              onClick={handleCheckout} // ✅ Usando la nueva función
+              onClick={handleCheckout} 
               style={{width:'100%', padding:'15px', background:'#1a1a1a', color:'#fff', border:'none', marginTop:'20px', cursor:'pointer', fontWeight:'bold', display:'flex', alignItems:'center', justifyContent:'center', gap:'10px'}}
             >
               FINALIZAR PEDIDO

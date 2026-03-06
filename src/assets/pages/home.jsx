@@ -7,7 +7,7 @@ import ProductModal from "../components/ProductModal";
 import ReelsSection from "../components/ReelsSection";
 import { shopifyFetch, addToCart } from "../../utils/shopify";
 
-// Mapeo actualizado basado en tus imágenes de Shopify Admin
+
 const COLOR_MAP = {
   "clear": "#ffffff",
   "pink": "#ffc0cb",
@@ -39,6 +39,46 @@ const COLOR_MAP = {
   "striped": "#888888",
   "tie-dye": "#a29bfe"
 };
+
+const AVAILABLE_COLORS = Object.keys(COLOR_MAP); 
+
+const COLOR_OPTIONS = [
+  {
+    value: "",
+    label: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span
+          style={{
+            width: 14,
+            height: 14,
+            borderRadius: "50%",
+            background: "#ddd",
+            border: "1px solid #ccc"
+          }}
+        />
+        Todos los colores
+      </div>
+    )
+  },
+
+  ...Object.keys(COLOR_MAP).map(color => ({
+    value: color,
+    label: (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span
+          style={{
+            width: 14,
+            height: 14,
+            borderRadius: "50%",
+            border: "1px solid #ddd",
+            background: COLOR_MAP[color]
+          }}
+        />
+        {color.charAt(0).toUpperCase() + color.slice(1)}
+      </div>
+    )
+  }))
+];
 
 const CATEGORY_HANDLE_MAP = {
   shoes: "zapatos",   
@@ -74,6 +114,7 @@ const Home = () => {
   const [sortOption, setSortOption] = useState("newest");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedColor, setSelectedColor] = useState(null);
 
   const [productos, setProductos] = useState([]);
   const [recommended, setRecommended] = useState([]);
@@ -198,12 +239,17 @@ const Home = () => {
     const params = new URLSearchParams(location.search);
     const s = params.get("search") || "";
     const c = params.get("category") || "all";
-    setSearchQuery(s);
-    setSelectedCategory(c);
-    if (location.search || (c === "all" && location.hash === "#catalog")) {
-      setTimeout(scrollToCatalog, 100);
-    }
-  }, [location.search]);
+
+    const timer = setTimeout(() => {
+      setSearchQuery(s);
+      setSelectedCategory(c);
+      if (location.search || (c === "all" && location.hash === "#catalog")) {
+        scrollToCatalog();
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [location.search, location.hash]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -217,6 +263,15 @@ const Home = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loading]);
+
+const filteredProducts = selectedColor
+  ? productos.filter(p =>
+      p.colores?.some(c =>
+        c.toLowerCase().trim() === selectedColor
+      )
+    )
+  : productos;
+
 
   return (
     <div className="home-container">
@@ -241,25 +296,24 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-white">
-        <div className="container">
-          <div className="section-header reveal-on-scroll">
+      <section className="recommended-section bg-white">
+          <div className="recommended-header reveal-on-scroll">
             <h2 className="display-title">Recomendado para ti</h2>
             <div className="nav-arrows">
-              <button className="arrow-btn" onClick={() => recommendedScrollRef.current.scrollBy({left: -320, behavior: "smooth"})}>
+              <button className="arrow-btn" onClick={() => recommendedScrollRef.current.scrollBy({left: -350, behavior: "smooth"})}>
                 <span className="material-symbols-outlined">west</span>
               </button>
-              <button className="arrow-btn" onClick={() => recommendedScrollRef.current.scrollBy({left: 320, behavior: "smooth"})}>
+              <button className="arrow-btn" onClick={() => recommendedScrollRef.current.scrollBy({left: 350, behavior: "smooth"})}>
                 <span className="material-symbols-outlined">east</span>
               </button>
             </div>
           </div>
-          <div className="horizontal-scroll no-scrollbar reveal-on-scroll" ref={recommendedScrollRef}>
+          
+          <div className="recommended-scroll no-scrollbar reveal-on-scroll" ref={recommendedScrollRef}>
             {recommended.map((p) => (
               <ProductCard key={p.id} product={p} onOpen={() => {setSelectedProduct(p); setIsModalOpen(true)}} />
             ))}
           </div>
-        </div>
       </section>
 
       <section className="category-full-grid">
@@ -272,7 +326,7 @@ const Home = () => {
         <div className="parallax-content reveal-on-scroll">
           <span className="hero-tag">@BREINS_STORE</span>
           <h2 className="parallax-title">El Flow en Movimiento</h2>
-          <p className="parallax-text">Únete al parche en Instagram.</p>
+          <p className="parallax-text">Únete a nuestro Instagram y no te pierdas las.</p>
           <a href="https://www.instagram.com/breins_shoes/" target="_blank" rel="noopener noreferrer">
             <button className="btn-solid">Seguir</button>
           </a>
@@ -281,13 +335,13 @@ const Home = () => {
 
       <ReelsSection />
 
-      <section className="section-padding bg-light" id="catalog" ref={catalogRef}>
-        <div className="container">
+      <section className="catalog-section bg-light" id="catalog" ref={catalogRef}>
           <h2 className="display-title reveal-on-scroll">
             {searchQuery 
               ? `Resultados de: "${searchQuery}"` 
               : `${CATEGORY_TRANSLATIONS[selectedCategory] || "Catálogo"}`}
           </h2>
+          
           <div className="catalog-layout">
             <aside className="filters-sidebar reveal-on-scroll">
               <div className="filter-group">
@@ -318,12 +372,22 @@ const Home = () => {
                   ))}
                 </div>
               </div>
+              <div className="filter-group">
+                <h4>Color</h4>
+
+                <CustomDropdown
+                  value={selectedColor}
+                  onChange={setSelectedColor}
+                  options={COLOR_OPTIONS}
+                />
+              </div>
             </aside>
+            
             <div className="products-grid reveal-on-scroll">
               {loading ? (
                 <p style={{ padding: "20px" }}>Cargando catálogo...</p>
               ) : productos.length > 0 ? (
-                productos.map((p) => (
+                filteredProducts.map((p) => (
                   <ProductCard key={p.id} product={p} onOpen={() => {setSelectedProduct(p); setIsModalOpen(true)}} />
                 ))
               ) : (
@@ -331,7 +395,6 @@ const Home = () => {
               )}
             </div>
           </div>
-        </div>
       </section>
       <Footer />
     </div>

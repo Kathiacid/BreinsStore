@@ -5,8 +5,6 @@ const ScrollToTop = () => {
   const { pathname, search } = useLocation();
 
   useEffect(() => {
-    // Si hay parámetros de búsqueda (incluyendo category=all), no subimos al inicio
-    // para dejar que Home.jsx haga el scroll al catálogo.
     if (pathname === "/" && search) {
       return;
     }

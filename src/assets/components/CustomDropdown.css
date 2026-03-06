@@ -1,12 +1,12 @@
-/* Contenedor Principal */
+
 .custom-dropdown {
   position: relative;
   width: 100%;
-  font-family: 'Inter', sans-serif; /* O la fuente que uses en tu Home */
+  font-family: 'Inter', sans-serif; 
   user-select: none;
 }
 
-/* Botón disparador (Trigger) */
+
 .custom-dropdown__trigger {
   width: 100%;
   display: flex;
@@ -14,7 +14,7 @@
   align-items: center;
   padding: 12px 16px;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0; /* Color suave para bordes */
+  border: 1px solid #e2e8f0; 
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.95rem;
@@ -35,7 +35,6 @@
   border-color: #e2e8f0;
 }
 
-/* Icono de flecha */
 .custom-dropdown__trigger span:last-child {
   font-size: 0.7rem;
   color: #64748b;
@@ -47,7 +46,7 @@
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
-/* Menú desplegable */
+
 .custom-dropdown__menu {
   position: absolute;
   top: calc(100% + 6px);
@@ -62,7 +61,7 @@
   animation: dropdownFadeIn 0.2s ease-out;
 }
 
-/* Items del menú */
+
 .custom-dropdown__item {
   padding: 12px 16px;
   cursor: pointer;
@@ -82,7 +81,7 @@
   font-weight: 500;
 }
 
-/* Animación de entrada */
+
 @keyframes dropdownFadeIn {
   from {
     opacity: 0;
@@ -94,7 +93,6 @@
   }
 }
 
-/* Scrollbar personalizado para listas largas */
 .custom-dropdown__menu {
   max-height: 250px;
   overflow-y: auto;

@@ -1,77 +1,84 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './ReelsSection.css';
 
-// ⚠️ IMPORTANTE: 
-// 1. Ve a developers.facebook.com y crea una app tipo "Consumer".
-// 2. Añade "Instagram Basic Display".
-// 3. Genera un "User Token".
-// 4. Pégalo aquí abajo entre las comillas.
-const INSTAGRAM_TOKEN = ""; // <--- PEGA TU TOKEN AQUÍ
+const IG_BUSINESS_ID = "17841457832604406"; 
+const ACCESS_TOKEN = "EAARWTnH5aegBQz2nZCmjyXCJUXLmOZAQ6fIPal71royKT6anueTkj4QkPURZA2AEIqxJIHDidMhZC3egAV4p0RVvRmb2LgnZCqRkSrOVOrcJZAsQ8odnizr1qgZAuMpQZBGU52HMLqRF4Trn6wyxXhlftQgLXyeZB2PXhjz8JsFxpTckszUQCMvArmHfHCvT09AZDZD"; 
 
 const ReelsSection = () => {
     const [reels, setReels] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchInstagramReels = useCallback(async () => {
+        if (!ACCESS_TOKEN || !IG_BUSINESS_ID) {
+            setReels(MOCK_REELS);
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const url = `https://graph.facebook.com/v21.0/${IG_BUSINESS_ID}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${ACCESS_TOKEN}`;
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.data) {
+                const onlyReels = result.data
+                    .filter(item => item.media_type === 'VIDEO')
+                    .slice(0, 6); 
+                setReels(onlyReels);
+            }
+        } catch (error) {
+            console.error("Error cargando Reels:", error);
+            setReels(MOCK_REELS);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchReels = async () => {
-            // Si NO hay token, usamos datos de prueba para no romper el diseño
-            if (!INSTAGRAM_TOKEN) {
-                console.warn("Falta el Token de Instagram. Mostrando datos de prueba.");
-                setReels(MOCK_REELS);
-                return;
-            }
+        fetchInstagramReels();
+    }, [fetchInstagramReels]);
 
-            try {
-                // URL oficial de Instagram API para obtener medios
-                const url = `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink&access_token=${INSTAGRAM_TOKEN}`;
-                
-                const response = await fetch(url);
-                const data = await response.json();
+    const handleMouseEnter = (e) => {
+        const video = e.currentTarget.querySelector('video');
+        if (video) video.play().catch(() => {});
+    };
 
-                if (data.data) {
-                    // 1. Filtramos solo VIDEO (Reels) o IMAGE si quieres todo
-                    // 2. Tomamos los primeros 5
-                    const onlyReels = data.data
-                        .filter(item => item.media_type === 'VIDEO' || item.media_type === 'CAROUSEL_ALBUM') 
-                        .slice(0, 5);
-                    
-                    setReels(onlyReels);
-                }
-            } catch (error) {
-                console.error("Error cargando Reels:", error);
-                setReels(MOCK_REELS); // Fallback en error
-            }
-        };
-
-        fetchReels();
-    }, []);
+    const handleMouseLeave = (e) => {
+        const video = e.currentTarget.querySelector('video');
+        if (video) {
+            video.pause();
+            video.currentTime = 0;
+        }
+    };
 
     return (
         <section className="reels-section">
-            <div className="reels-header reveal-on-scroll">
-                <h2 className="reels-title">On The Feed</h2>
+            <div className="reels-header">
+                <h2 className="reels-title">Nuestro feed</h2>
                 <p className="reels-subtitle">@BREINS_STORE</p>
             </div>
 
-            <div className="reels-grid reveal-on-scroll">
+            <div className="reels-grid">
                 {reels.map((reel) => (
                     <a 
                         key={reel.id} 
                         href={reel.permalink} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="reel-card"
+                        className={`reel-card ${loading ? 'skeleton' : ''}`}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                     >
-                        {/* Instagram usa thumbnail_url para videos, media_url para imagenes */}
-                        <img 
-                            src={reel.thumbnail_url || reel.media_url} 
-                            alt={reel.caption} 
-                            className="reel-thumb" 
-                            loading="lazy"
+                        <video
+                            className="reel-video"
+                            src={reel.media_url}
+                            poster={reel.thumbnail_url}
+                            muted 
+                            loop
+                            playsInline
                         />
-                        
+                        <div className="video-shield"></div>
                         <div className="reel-overlay">
-                            <span className="material-symbols-outlined reel-icon">smart_display</span>
-                            <span className="material-symbols-outlined play-icon">play_circle</span>
                             {reel.caption && (
                                 <p className="reel-caption">{reel.caption}</p>
                             )}
@@ -83,13 +90,8 @@ const ReelsSection = () => {
     );
 };
 
-// Datos falsos por si no tienes el token aún (para que veas el diseño)
 const MOCK_REELS = [
-    { id: 1, permalink: "#", media_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80", caption: "New Drop Available 🔥", media_type: "VIDEO" },
-    { id: 2, permalink: "#", media_url: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&q=80", caption: "Running vibes 🏃‍♂️", media_type: "VIDEO" },
-    { id: 3, permalink: "#", media_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", caption: "Red Edition ❤️", media_type: "VIDEO" },
-    { id: 4, permalink: "#", media_url: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&q=80", caption: "Green Force 🟢", media_type: "VIDEO" },
-    { id: 5, permalink: "#", media_url: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&q=80", caption: "Street Style 2024", media_type: "VIDEO" },
+    { id: "m1", permalink: "#", media_url: "https://v.ftcdn.net/05/51/93/42/700_F_551934215_S0V0G5p8BfX5o7n8f9UvRzV8W6m3e0fO_ST.mp4", thumbnail_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500", caption: "New Drop 🔥", media_type: "VIDEO" },
 ];
 
 export default ReelsSection;

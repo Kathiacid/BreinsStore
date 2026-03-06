@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getCart } from "../../utils/shopify"; // ✅ Importamos getCart
+import { getCart } from "../../utils/shopify"; 
 import "./navbar.css";
 
 const Navbar = ({ onCartClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [cartCount, setCartCount] = useState(0); // ✅ Inicializamos en 0
+  const [cartCount, setCartCount] = useState(0); 
 
   const navigate = useNavigate();
   const closeMenu = () => setIsOpen(false);
 
-  /* =========================
-      ACTUALIZAR CONTADOR REAL
-  ========================= */
-  const updateBadgeCount = async () => {
+  // Memorizamos updateBadgeCount para que sea una referencia estable
+  const updateBadgeCount = useCallback(async () => {
     try {
       const cart = await getCart();
       if (cart) {
@@ -23,23 +21,25 @@ const Navbar = ({ onCartClick }) => {
     } catch (error) {
       console.error("Error al actualizar contador del navbar:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    // 1. Cargar cantidad inicial al montar
-    updateBadgeCount();
+    // Definimos una función interna para la carga inicial
+    const initNavbar = async () => {
+      await updateBadgeCount();
+    };
 
-    // 2. Escuchar el evento personalizado que disparamos en shopify.js
+    initNavbar();
+
+    // Suscripción al evento personalizado
     window.addEventListener("cartUpdated", updateBadgeCount);
 
     return () => {
       window.removeEventListener("cartUpdated", updateBadgeCount);
     };
-  }, []);
+  }, [updateBadgeCount]); // updateBadgeCount ahora es una dependencia segura
 
-  /* =========================
-      BUSCADOR
-  ========================= */
+
   const handleSearch = () => {
     if (searchTerm.trim()) {
       navigate(`/?search=${encodeURIComponent(searchTerm.trim())}`);
@@ -96,7 +96,6 @@ const Navbar = ({ onCartClick }) => {
           </span>
         </div>
 
-        {/* ✅ Icono del Carrito con el Badge Corregido */}
         <div
           className="nav-icon-link"
           onClick={onCartClick}

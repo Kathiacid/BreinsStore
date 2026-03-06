@@ -1,8 +1,4 @@
-/* ==========================================================================
-   MODAL ELEGANTE - ESTILOS INTEGRADOS
-   ========================================================================== */
 
-/* Capa de fondo con desenfoque */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -17,7 +13,7 @@
   backdrop-filter: blur(8px);
 }
 
-/* Contenedor principal del modal */
+
 .modal-content-elegant {
   background: white;
   width: 90%;
@@ -29,7 +25,7 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
-/* Estructura interna */
+
 .modal-body {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -37,9 +33,6 @@
   padding: 40px;
 }
 
-/* ==========================================================================
-   GALERÍA DE IMÁGENES
-   ========================================================================== */
 .gallery-section {
   display: flex;
   gap: 15px;
@@ -82,9 +75,6 @@
   object-fit: contain;
 }
 
-/* ==========================================================================
-   TEXTOS E INFORMACIÓN
-   ========================================================================== */
 .brand-tag {
   font-size: 11px;
   letter-spacing: 3px;
@@ -110,9 +100,6 @@
   color: #333;
 }
 
-/* ==========================================================================
-   SELECTORES (COLOR Y TALLA)
-   ========================================================================== */
 .selector-group {
   margin-bottom: 25px;
 }
@@ -126,7 +113,6 @@
   letter-spacing: 1px;
 }
 
-/* Swatches de Color */
 .swatch-list {
   display: flex;
   gap: 12px;
@@ -148,12 +134,10 @@
   transform: scale(1.15);
 }
 
-/* Tallas (Contraste Mejorado y Optimización de Selección) */
 .size-list {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  /* Elimina el resaltado azul/blanco predeterminado en móviles */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -168,7 +152,6 @@
   font-weight: 600;
   font-size: 14px;
   outline: none;
-  /* Transición rápida para background para evitar parpadeos */
   transition: border-color 0.2s, background-color 0.1s, color 0.1s, transform 0.2s;
 }
 
@@ -177,13 +160,11 @@
   background: #edf2f7;
 }
 
-/* Estado Activo: Forzamos colores instantáneos */
 .size-item.active {
   background: #000 !important;
   color: #fff !important;
   border-color: #000;
   transform: translateY(-2px);
-  /* Mantenemos solo la transición de movimiento para el feedback visual */
   transition: transform 0.2s;
 }
 
@@ -194,10 +175,6 @@
   text-decoration: line-through;
   border-color: #eee;
 }
-
-/* ==========================================================================
-   BOTONES DE ACCIÓN
-   ========================================================================== */
 
 .btn-add-to-cart {
   width: 100%;
@@ -226,38 +203,27 @@
   cursor: not-allowed;
 }
 
-/* Botón Cerrar */
-/* Botón Cerrar - Versión Elegante y Circular */
+
 .close-btn-minimal {
   position: absolute;
   top: 20px;
   right: 20px;
-  
-  /* Dimensiones fijas para asegurar circularidad absoluta */
   width: 32px;
   height: 32px;
-  
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 50%; /* Círculo perfecto */
-  
-  /* Tipografía minimalista */
-  font-family: serif; /* Una fuente con serifa lo hace ver más boutique */
+  border-radius: 50%; 
+  font-family: serif; 
   font-size: 20px;
   font-weight: 300;
   line-height: 1;
-  
-  /* Centrado perfecto */
   display: flex;
   align-items: center;
   justify-content: center;
-  
   cursor: pointer;
   z-index: 100;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: #1a1a1a;
-  
-  /* Limpieza de estilos de navegador */
   padding: 0;
   outline: none;
   -webkit-tap-highlight-color: transparent;
@@ -267,11 +233,10 @@
   background: #1a1a1a;
   color: #fff;
   border-color: #1a1a1a;
-  transform: rotate(90deg); /* Giro sutil al pasar el mouse */
+  transform: rotate(90deg); 
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Ajuste específico para móvil para que no se vea pequeño ni deforme */
 @media (max-width: 768px) {
   .close-btn-minimal {
     top: 15px;
@@ -282,9 +247,6 @@
   }
 }
 
-/* ==========================================================================
-   DISEÑO RESPONSIVO
-   ========================================================================== */
 @media (max-width: 768px) {
   .modal-body {
     grid-template-columns: 1fr;
@@ -318,4 +280,25 @@
   .title-elegant {
     font-size: 22px;
   }
+}
+
+.price-container-modal {
+  display: flex;
+  align-items: center;
+  gap: 12px; 
+  margin-bottom: 25px;
+}
+
+.original-price-modal {
+  text-decoration: line-through;
+  color: #999; 
+  font-size: 18px;
+  font-weight: 300;
+}
+
+.price-elegant {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e53e3e; 
+  margin-bottom: 0; 
 }

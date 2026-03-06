@@ -67,7 +67,6 @@ query getCart($cartId: ID!) {
 
 const data = await shopifyFetch(query, { cartId });
 
-// Si Shopify devuelve null (el carrito expiró o ya se pagó), limpiamos local
 if (!data || !data.cart) {
 localStorage.removeItem("shopify_cart_id");
 return null;
@@ -97,11 +96,10 @@ cartId,
 lines: [{ merchandiseId: variantId, quantity }] 
 });
 
-// Si hay errores de usuario (como ID de carrito inválido)
+
 if (data.errors || (data.cartLinesAdd?.userErrors && data.cartLinesAdd.userErrors.length > 0)) {
 console.warn("Carrito inválido detectado. Limpiando y reintentando...");
 localStorage.removeItem("shopify_cart_id");
-// Reintento automático: se llama a sí mismo para crear uno nuevo
 return addToCart(variantId, quantity);
 }
 

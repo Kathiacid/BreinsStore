@@ -16,11 +16,17 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [mainImage, setMainImage] = useState("");
 
+  // CORRECCIÓN: Sincronización de estado optimizada
   useEffect(() => {
-    if (product) {
-      setSelectedColor(null);
-      setSelectedSize(null);
-      setMainImage(product.featuredImage?.url || product.imagen_url);
+    if (product && isOpen) {
+      // El timeout de 0ms saca la ejecución del flujo síncrono
+      const timer = setTimeout(() => {
+        setSelectedColor(null);
+        setSelectedSize(null);
+        setMainImage(product.featuredImage?.url || product.imagen_url);
+      }, 0);
+
+      return () => clearTimeout(timer); // Limpieza para evitar fugas de memoria
     }
   }, [product, isOpen]);
 
@@ -53,7 +59,6 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
 
   if (!isOpen || !product) return null;
 
-  // LÓGICA DE PRECIOS IGUAL AL CATÁLOGO
   const precioActual = product.priceRange?.minVariantPrice?.amount || 0;
   const precioOriginal = product.variants?.nodes[0]?.compareAtPrice?.amount;
   const tieneDescuento = precioOriginal && Number(precioOriginal) > Number(precioActual);
@@ -109,14 +114,13 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
               <span className="brand-tag">{product.vendor || "BREINS"}</span>
               <h2 className="title-elegant">{product.title}</h2>
               
-              {/* PRECIO RENDERIZADO COMO EN EL HOME */}
               <div className="price-container-modal">
                 {tieneDescuento && (
-                  <span className="original-price-modal" style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '10px', fontSize: '1.1rem' }}>
+                  <span className="original-price-modal">
                     {formatPrice(precioOriginal)}
                   </span>
                 )}
-                <span className="price-elegant" style={{ fontWeight: 'bold' }}>
+                <span className="price-elegant">
                   {formatPrice(precioActual)}
                 </span>
               </div>
@@ -161,12 +165,26 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
               )}
             </div>
 
+            {(product.description || product.descriptionHtml) && (
+              <div className="product-description-container">
+                <h4 className="description-label">DESCRIPCIÓN</h4>
+                <div 
+                  className="description-text"
+                  dangerouslySetInnerHTML={{ __html: product.descriptionHtml || product.description }} 
+                />
+              </div>
+            )}
+
             <button 
               className="btn-add-to-cart"
               disabled={!product.availableForSale || (allPossibleSizes.length > 0 && !selectedSize)}
               onClick={handleAdd}
             >
-              {!product.availableForSale ? "SIN STOCK" : !selectedSize && allPossibleSizes.length > 0 ? "ELEGIR TALLA" : "AÑADIR AL CARRITO"}
+              {!product.availableForSale 
+                ? "SIN STOCK" 
+                : !selectedSize && allPossibleSizes.length > 0 
+                  ? "ELEGIR TALLA" 
+                  : "AÑADIR AL CARRITO"}
             </button>
           </div>
         </div>

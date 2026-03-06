@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { shopifyFetch } from "../../utils/shopify"; // Tu utilidad personalizada
+import { shopifyFetch } from "../../utils/shopify"; 
 import "./NotFound.css";
 
 const NotFound = () => {

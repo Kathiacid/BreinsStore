@@ -13,7 +13,6 @@ function App() {
   const toggleCart = () => setIsCartOpen((prev) => !prev);
   const closeCart = () => setIsCartOpen(false);
 
-  // ✅ Escuchar evento global para abrir el carrito automáticamente
   useEffect(() => {
     const handleAutoOpen = () => setIsCartOpen(true);
     window.addEventListener("openCart", handleAutoOpen);
