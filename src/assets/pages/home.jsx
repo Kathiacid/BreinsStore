@@ -290,8 +290,8 @@ const filteredProducts = selectedColor
           <h1 className="hero-title">BREINS<br /><span>STORE</span></h1>
           <p className="hero-text">Descubre tu estilo al mejor precio.</p>
           <div className="hero-btns">
-            <Link to="/?category=shoes" className="btn-solid">Zapatos</Link>
-            <Link to="/?category=clothing" className="btn-outline">Ropa</Link>
+            <Link to="?category=all#catalog" className="btn-solid">Ir al Catálogo</Link>
+            
           </div>
         </div>
       </section>
