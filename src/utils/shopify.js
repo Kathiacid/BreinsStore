@@ -128,3 +128,14 @@ mutation remove($cartId: ID!, $lineIds: [ID!]!) {
 await shopifyFetch(mutation, { cartId, lineIds: [lineId] });
 window.dispatchEvent(new Event("cartUpdated"));
 }
+
+export function redirectToCheckout(checkoutUrl) {
+    if (!checkoutUrl) return;
+
+    const professionalUrl = checkoutUrl.replace(
+    import.meta.env.VITE_SHOPIFY_DOMAIN,
+    'checkout.breinstore.com'           
+);
+
+    window.location.replace(professionalUrl);
+}

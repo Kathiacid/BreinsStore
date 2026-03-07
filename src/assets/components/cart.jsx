@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { getCart, removeFromCart, updateCartQuantity } from "../../utils/shopify";
+// Se agregó redirectToCheckout a los imports
+import { getCart, removeFromCart, updateCartQuantity, redirectToCheckout } from "../../utils/shopify";
 import "./cart.css";
 
 const Cart = ({ isOpen, onClose }) => {
@@ -35,11 +36,14 @@ const Cart = ({ isOpen, onClose }) => {
     return () => window.removeEventListener("cartUpdated", fetchCartItems);
   }, [fetchCartItems]);
 
-
+  // FUNCIÓN ACTUALIZADA CON REDIRECT PROFESIONAL
   const handleCheckout = () => {
     if (cartData?.checkoutUrl) {
+      // Opcional: solo si quieres vaciar el carrito local al iniciar pago
       localStorage.removeItem("shopify_cart_id");
-      window.location.href = cartData.checkoutUrl;
+      
+      // Usa la función de utilidad para ir al subdominio correcto sin romper el historial
+      redirectToCheckout(cartData.checkoutUrl);
     }
   };
 
